@@ -1,0 +1,204 @@
+{
+  "@context": "https://schema.org",
+  "@type": "Drug",
+  "name": "Imbruvica",
+  "nonProprietaryName": "ibrutinib",
+  "manufacturer": {
+    "@type": "Organization",
+    "name": "AbbVie Inc. / Janssen Biotech"
+  },
+  "drugClass": "BTK inhibitor",
+  "administrationRoute": "Oral",
+  "dosageForm": "Capsule / Tablet",
+  "activeIngredient": "ibrutinib",
+  "availableStrength": [
+    {
+      "@type": "DrugStrength",
+      "activeIngredient": "ibrutinib",
+      "strengthValue": "140",
+      "strengthUnit": "mg"
+    },
+    {
+      "@type": "DrugStrength",
+      "activeIngredient": "ibrutinib",
+      "strengthValue": "280",
+      "strengthUnit": "mg"
+    },
+    {
+      "@type": "DrugStrength",
+      "activeIngredient": "ibrutinib",
+      "strengthValue": "420",
+      "strengthUnit": "mg"
+    },
+    {
+      "@type": "DrugStrength",
+      "activeIngredient": "ibrutinib",
+      "strengthValue": "560",
+      "strengthUnit": "mg"
+    }
+  ],
+  "indication": [
+    {
+      "@type": "MedicalIndication",
+      "name": "Chronic Lymphocytic Leukemia",
+      "description": "CLL/SLL in adults, including those with del(17p)"
+    },
+    {
+      "@type": "MedicalIndication",
+      "name": "Mantle Cell Lymphoma",
+      "description": "MCL in adults who have received at least one prior therapy"
+    },
+    {
+      "@type": "MedicalIndication",
+      "name": "Waldenstrom's Macroglobulinemia",
+      "description": "WM in adults"
+    },
+    {
+      "@type": "MedicalIndication",
+      "name": "Marginal Zone Lymphoma",
+      "description": "MZL requiring systemic therapy who have received at least one prior anti-CD20 therapy"
+    }
+  ],
+  "adverseOutcome": [
+    {
+      "@type": "MedicalCondition",
+      "name": "Atrial fibrillation/flutter",
+      "severity": "Serious",
+      "incidence": "10-16%"
+    },
+    {
+      "@type": "MedicalCondition",
+      "name": "Hemorrhage/bleeding",
+      "severity": "Serious"
+    },
+    {
+      "@type": "MedicalCondition",
+      "name": "Hypertension",
+      "severity": "Common"
+    },
+    {
+      "@type": "MedicalCondition",
+      "name": "Diarrhea",
+      "severity": "Common"
+    },
+    {
+      "@type": "MedicalCondition",
+      "name": "Infections",
+      "severity": "Serious"
+    },
+    {
+      "@type": "MedicalCondition",
+      "name": "Cytopenias",
+      "severity": "Common"
+    }
+  ],
+  "clinicalEfficacy": {
+    "CLL_frontline": {
+      "measure": "PFS",
+      "value": "89%",
+      "timepoint": "12 months"
+    },
+    "MCL_relapsed": {
+      "measure": "ORR",
+      "value": "68%",
+      "timepoint": "Best response"
+    },
+    "WM": {
+      "measure": "ORR",
+      "value": "90%",
+      "timepoint": "Best response"
+    }
+  },
+  "drugInteractions": {
+    "CYP3A_inhibitors": "Strong inhibitors require dose reduction to 140mg; moderate inhibitors to 280mg",
+    "CYP3A_inducers": "Avoid concomitant use with strong CYP3A inducers",
+    "anticoagulants": "Increased bleeding risk; hold 3-7 days pre-surgery"
+  },
+  "competitorContext": {
+    "therapeuticAreas": [
+      "Oncology"
+    ],
+    "biosimilarsAvailable": false,
+    "keyCompetitors": [
+      "Calquence (acalabrutinib)",
+      "Brukinsa (zanubrutinib)"
+    ],
+    "competitorsByIndication": {
+      "Chronic Lymphocytic Leukemia": [
+        "Calquence",
+        "Brukinsa",
+        "Gazyva",
+        "Rituxan"
+      ],
+      "Mantle Cell Lymphoma": [
+        "Calquence",
+        "Brukinsa",
+        "Revlimid",
+        "Rituxan"
+      ],
+      "Waldenstrom's Macroglobulinemia": [
+        "Brukinsa",
+        "Rituxan"
+      ],
+      "Marginal Zone Lymphoma": [
+        "Calquence",
+        "Brukinsa",
+        "Gazyva",
+        "Revlimid"
+      ]
+    },
+    "differentiators": "First-in-class BTK inhibitor; longest clinical follow-up; broadest indication set"
+  },
+  "prescribingInformation": "https://www.imbruvica.com/prescribing-information",
+  "labelReference": {
+    "indicationsAndUsage": "1 INDICATIONS AND USAGE IMBRUVICA is a kinase inhibitor indicated for the treatment of: Adult patients with chronic lymphocytic leukemia (CLL)/Small lymphocytic lymphoma (SLL) ( 1.1 ). Adult patients with chronic lymphocytic leukemia (CLL)/Small lymphocytic lymphoma (SLL) with 17p deletion ( 1.2 ). Adult patients with Waldenström’s macroglobulinemia (WM) ( 1.3 ). Adult and pediatric patients age 1 year and older with chronic graft versus host disease (cGVHD) after failure of one or more lines of systemic therapy ( 1.4 ). 1.1 Chronic Lymphocytic Leukemia/Small Lymphocytic Lymphoma IMBRUVICA is indicated for the treatment of adult patients with chronic lymphocytic leukemia (CLL)/small lymphocytic lymphoma (SLL). 1. 2 Chronic Lymphocytic Leukemia/Small Lymphocytic Lymphoma with 17p deletion IMBRUVICA is indicated for the treatment of adult patients with chronic lymphocytic leukemia (CLL)/small lymphocytic lymphoma (SLL) with 17p deletion. 1. 3 Waldenström’s Macroglobulinemia IMBRUVICA is indicated for the treatment of adult patients with Waldenström’s macroglobulinemia (WM). 1. 4 Chronic Graft versus Host Disease IMBRUVICA is indicated for the treatment of adult and pediatric patients age 1 year and older with chronic graft-versus-host disease (cGVHD) after failure of one or more lines of systemic therapy.",
+    "adverseReactions": "6 ADVERSE REACTIONS The following clinically significant adverse reactions are described elsewhere in the labeling: Hemorrhage [see Warnings and Precautions ( 5.1 )] Infections [see Warnings and Precautions ( 5.2 )] Cardiac Arrhythmias, Cardiac Failure, and Sudden Death [see Warnings and Precautions ( 5.3 )] Hypertension [see Warnings and Precautions ( 5.4 )] Cytopenias [see Warnings and Precautions ( 5.5 )] Second Primary Malignancies [see Warnings and Precautions ( 5.6 )] Hepatotoxicity, including DILI [see Warning s and Precautions ( 5.7 )] Tumor Lysis Syndrome [see Warnings and Precautions ( 5.8 )] The most common (≥30%) adverse reactions in patients with B-cell malignancies are thrombocytopenia, diarrhea, fatigue, musculoskeletal pain, neutropenia, rash, anemia, bruising, and nausea ( 6 ). The most common (≥20%) adverse reactions in adult or pediatric patients with cGVHD are fatigue, anemia, bruising, diarrhea, thrombocytopenia, musculoskeletal pain, pyrexia, muscle spasms, stomatitis, hemorrhage, nausea, abdominal pain, pneumonia, and headache ( 6 ). To report SUSPECTED ADVERSE REACTIONS, contact AbbVie at 1-800-633-9110 or FDA at 1-800-FDA-1088 or www.fda.gov/medwatch. 6.1 Clinical Trials Experience Because clinical trials are conducted under widely variable conditions, adverse reaction rates observed in clinical trials of a drug cannot be directly compared with rates of clinical trials of another drug and may not reflect the rates observed in practice. Unless otherwise specified, the pooled safety population described in the WARNINGS AND PRECAUTIONS reflects exposure to IMBRUVICA in 6 trials. IMBRUVICA was administered as a single agent at 420 mg orally once daily (475 patients), as a single agent at 560 mg orally once daily [1.3 times the recommended adult dosage (174 patients)], and in combination with other drugs at 420 mg orally once daily (827 patients) in patients with B-cell malignancies. In this pooled safety population of 1,476 patients, 87% were exposed for 6 months or longer and 68% were exposed for greater than one year. The most common adverse reactions (≥ 30%) were thrombocytopenia, diarrhea, fatigue, musculoskeletal pain, neutropenia, rash, anemia, bruising, and nausea. Certain subsections in the WARNINGS AND PRECAUTIONS include patients who received IMBRUVICA in unapproved monotherapy or combination regimens. Chronic Lymphocytic Leukemia/Small Lymphocytic Lymphoma The data described below reflect exposure to IMBRUVICA in one single-arm, open-label clinical trial (Study 1102) and five randomized controlled clinical trials (RESONATE, RESONATE-2, HELIOS, iLLUMINATE, and E1912) in patients with CLL/SLL (n=2,016 total, including n=1,133 patients exposed to IMBRUVICA). In general, patients with creatinine clearance (CLcr) ≤ 30 mL/min, AST or ALT ≥ 2.5 x ULN, or total bilirubin ≥ 1.5 x ULN (unless of non-hepatic origin) were excluded from these trials. In Study E1912, patients with AST or ALT > 3 x ULN or total bilirubin > 2.5 x ULN were excluded. Study 1102 included 51 patients with previously treated CLL/SLL. RESONATE included 386 randomized patients with previously treated CLL or SLL who received single agent IMBRUVICA or ofatumumab. RESONATE-2 included 267 randomized patients with treatment naïve CLL or SLL who were 65 years or older and received single agent IMBRUVICA or chlorambucil. HELIOS included 574 randomized patients with previously treated CLL or SLL who received IMBRUVICA in combination with BR or placebo in combination with BR. iLLUMINATE included 228 randomized patients with treatment naïve CLL/SLL who were 65 years or older or with coexisting medical conditions and received IMBRUVICA in combination with obinutuzumab or chlorambucil in combination with obinutuzumab. E1912 included 510 patients with previously untreated CLL/SLL who were 70 years or younger and received IMBRUVICA in combination with rituximab or received fludarabine, cyclophosphamide, and rituximab (FCR). The most common adverse …",
+    "dosageAndAdministration": "2 DOSAGE AND ADMINISTRATION CLL/SLL and WM : 420 mg taken orally once daily ( 2.1 ). cGVHD : ◦ Patients 12 years and older: 420 mg taken orally once daily ( 2.1 ). ◦ Patients 1 to less than 12 years of age: 240 mg/m 2 taken orally once daily (up to a dose of 420 mg) ( 2.1 ). Tablets or capsules should be taken orally with a glass of water. Do not open, break, or chew the capsules. Do not cut, crush, or chew the tablets. See full prescribing information for oral suspension administration instructions ( 2.1 ). 2.1 Recommended Dosage Chronic Lymphocytic Leukemia/Small Lymphocytic Lymphoma and Waldenström’s Macroglobulinemia The recommended dosage of IMBRUVICA for CLL/SLL and WM is 420 mg orally once daily until disease progression or unacceptable toxicity. For CLL/SLL, IMBRUVICA can be administered as a single agent, in combination with rituximab or obinutuzumab, or in combination with bendamustine and rituximab (BR). For WM, IMBRUVICA can be administered as a single agent or in combination with rituximab. When administering IMBRUVICA in combination with rituximab or obinutuzumab, consider administering IMBRUVICA prior to rituximab or obinutuzumab when given on the same day. Chronic Graft versus Host Disease The recommended dosage of IMBRUVICA for patients age 12 years and older with cGVHD is 420 mg orally once daily, and for patients 1 to less than 12 years of age with cGVHD is 240 mg/m 2 orally once daily (up to a dose of 420 mg), until cGVHD progression, recurrence of an underlying malignancy, or unacceptable toxicity. When a patient no longer requires therapy for the treatment of cGVHD, IMBRUVICA should be discontinued considering the medical assessment of the individual patient. Table 1: Recommended dosage based on body surface area (BSA) for patients 1 to less than 12 years of age using either IMBRUVICA capsules/tablets or oral suspension Recommended dose to achieve 240 mg/m 2 BSA* (m 2 ) Range Dose (mg) of IMBRUVICA Capsules/Tablets to Administer Volume (mL) of IMBRUVICA Oral Suspension (70 mg/mL) to Administer > 0.3 to 0.4 - 1.2 mL > 0.4 to 0.5 - 1.5 mL > 0.5 to 0.6 - 1.9 mL > 0.6 to 0.7 - 2.2 mL > 0.7 to 0.8 210 mg 2.6 mL > 0.8 to 0.9 210 mg 2.9 mL > 0.9 to 1 210 mg 3.3 mL > 1 to 1.1 280 mg 3.6 mL > 1.1 to 1.2 280 mg 4 mL > 1.2 to 1.3 280 mg 4.3 mL > 1.3 to 1.4 350 mg 4.6 mL > 1.4 to 1.5 350 mg 5 mL > 1.5 to 1.6 350 mg 5.3 mL > 1.6 420 mg 6 mL *BSA = body surface area. Administration Administer IMBRUVICA at approximately the same time each day. Swallow tablets or capsules whole with a glass of water. Do not open, break, or chew the capsules. Do not cut, crush, or chew the tablets. Follow Instructions for Use for further administration details of IMBRUVICA oral suspension. If a dose of IMBRUVICA is not taken at the scheduled time, it can be taken as soon as possible on the same day with a return to the normal schedule the following day. Do not take extra doses of IMBRUVICA to make up for the missed dose. 2.2 Dosage Modifications for Adverse Reactions For adverse reactions listed in Table 2 , interrupt IMBRUVICA therapy. Once the adverse reaction has improved to Grade 1 or baseline (recovery), follow the recommended dosage modifications (see Table 2 ). Table 2: Recommended Dosage Modifications for Adverse Reactions Adverse Reaction a,b Occurrence Dose Modification for CLL/SLL, WM, and Patients 12 Years or older with cGVHD After Recovery Starting Dose = 420 mg Dose Modification for Patients 1 Year to less than 12 Years with cGVHD After Recovery Starting Dose = 240 mg/m 2 Grade 2 cardiac failure First Restart at 280 mg daily c Restart at 160 mg/m 2 daily c Second Restart at 140 mg daily c Restart at 80 mg/m 2 daily c Third Discontinue IMBRUVICA Discontinue IMBRUVICA Grade 3 cardiac arrhythmias First Restart at 280 mg daily c Restart at 160 mg/m 2 daily c Second Discontinue IMBRUVICA Discontinue IMBRUVICA Grade 3 or 4 cardiac failure Grade 4 cardiac arrhythmias First Discontinue IMBRUVICA Discontinue IMBRUVICA Other Grade 3 o …"
+  },
+  "dataSource": "Curated (POC placeholder; clinical values pending Medical-Affairs verification); label fields seeded from openFDA (open.fda.gov)",
+  "lastUpdated": "2026-07-27",
+  "provenance": {
+    "generator": "scripts.generate_geo_schema",
+    "generatedAt": "2026-07-27",
+    "therapeuticAreas": [
+      "Oncology"
+    ],
+    "clinicalValuesVerified": false,
+    "curatedFields": [
+      "active_ingredient",
+      "administration_route",
+      "adverse_outcomes",
+      "brand",
+      "competitors",
+      "dosage_form",
+      "drug_class",
+      "efficacy",
+      "extra",
+      "generic",
+      "indications",
+      "manufacturer",
+      "prescribing_information",
+      "strengths",
+      "therapeutic_areas"
+    ],
+    "appliedFromLabel": [],
+    "labelProvided": [
+      "manufacturer",
+      "administration_route",
+      "drug_class",
+      "active_ingredient",
+      "indications_text",
+      "adverse_reactions_text",
+      "dosage_text",
+      "prescribing_information"
+    ],
+    "labelReferenceIncluded": [
+      "adverseReactions",
+      "dosageAndAdministration",
+      "indicationsAndUsage"
+    ],
+    "labelSource": "openFDA/DailyMed SPL 0dfd0279-ff17-4ea9-89be-9803c71bab44",
+    "labelEffectiveTime": "2025-10-21",
+    "note": "Curated YAML overrides openFDA-seeded fields. Replace placeholder clinical values with Medical-Affairs-approved data."
+  }
+}

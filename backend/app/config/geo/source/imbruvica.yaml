@@ -1,0 +1,64 @@
+# GEO curated source — Imbruvica. See humira.yaml for the format contract.
+brand: Imbruvica
+generic: ibrutinib
+# Flip to true once Medical Affairs signs off the efficacy + competitors values below.
+clinical_values_verified: false
+manufacturer: AbbVie Inc. / Janssen Biotech
+therapeutic_areas: [Oncology]
+drug_class: BTK inhibitor
+administration_route: Oral
+dosage_form: Capsule / Tablet
+active_ingredient: ibrutinib
+prescribing_information: https://www.imbruvica.com/prescribing-information
+aliases: []
+
+openfda:
+  brand_name: IMBRUVICA
+  generic_name: ibrutinib
+
+strengths:
+  - {value: "140", unit: mg}
+  - {value: "280", unit: mg}
+  - {value: "420", unit: mg}
+  - {value: "560", unit: mg}
+
+indications:
+  - name: Chronic Lymphocytic Leukemia
+    description: CLL/SLL in adults, including those with del(17p)
+  - name: Mantle Cell Lymphoma
+    description: MCL in adults who have received at least one prior therapy
+  - name: Waldenstrom's Macroglobulinemia
+    description: WM in adults
+  - name: Marginal Zone Lymphoma
+    description: MZL requiring systemic therapy who have received at least one prior anti-CD20 therapy
+
+adverse_outcomes:
+  - {name: Atrial fibrillation/flutter, severity: Serious, incidence: "10-16%"}
+  - {name: Hemorrhage/bleeding, severity: Serious}
+  - {name: Hypertension, severity: Common}
+  - {name: Diarrhea, severity: Common}
+  - {name: Infections, severity: Serious}
+  - {name: Cytopenias, severity: Common}
+
+efficacy:
+  CLL_frontline: {measure: PFS, value: "89%", timepoint: 12 months}
+  MCL_relapsed: {measure: ORR, value: "68%", timepoint: Best response}
+  WM: {measure: ORR, value: "90%", timepoint: Best response}
+
+# `key_competitors` is curated here rather than derived because these entries carry
+# generic names in parentheses that the taxonomy does not hold. The oncology indications
+# ARE in the brands.yaml `indications:` overlay now, so the generator derives a real
+# per-indication field alongside this list — CLL, MCL and Waldenstrom's each get their
+# own comparators rather than one flat Oncology block. Marginal Zone Lymphoma is still
+# undeclared and so still falls back to that block. See humira.yaml.
+competitors:
+  biosimilars_available: false
+  key_competitors: [Calquence (acalabrutinib), Brukinsa (zanubrutinib)]
+  differentiators: First-in-class BTK inhibitor; longest clinical follow-up; broadest indication set
+
+# Optional JSON-LD fields carried through verbatim into the generated schema.
+extra:
+  drugInteractions:
+    CYP3A_inhibitors: Strong inhibitors require dose reduction to 140mg; moderate inhibitors to 280mg
+    CYP3A_inducers: Avoid concomitant use with strong CYP3A inducers
+    anticoagulants: Increased bleeding risk; hold 3-7 days pre-surgery

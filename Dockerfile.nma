@@ -1,0 +1,69 @@
+# The R netmeta sidecar.
+#
+# Deliberately NOT baked into the application image. netmeta is validated and cited in the
+# HTA submissions our numbers will be compared against, so it earns its own container with
+# its own reportable package version; folding it into the app image would couple a Python
+# deploy to an R toolchain and put ~1.5 GB of it on every application build.
+#
+# TWO BUILD DECISIONS THAT MATTER MORE THAN THE IMAGE SIZE:
+#
+# 1. PPM BINARIES, NOT SOURCE. rocker/r-ver pins a Posit Package Manager snapshot, so
+#    install.packages() fetches prebuilt Linux binaries. That removes build-essential and
+#    gfortran from the image entirely - roughly 700MB-1GB and most of the build time -
+#    because the netmeta chain (meta, metafor, lme4, Matrix, nloptr) is otherwise compiled
+#    from source.
+#
+# 2. PINNED VERSIONS, IN THIS FILE. A statistical reviewer checks the package version
+#    against the one printed on the result. Floating the version would make a stored
+#    result unreproducible while still carrying a version string that looks authoritative.
+#    Changing either ARG below changes the image content hash, which is what the deploy
+#    script keys its conditional rebuild on.
+FROM rocker/r-ver:4.4.2
+
+# Bumping either of these is a reviewable change: it invalidates the image tag and every
+# result stored under the old version records the old number.
+ARG NETMETA_VERSION=2.9-0
+ARG PLUMBER_VERSION=1.2.2
+# Needed by golden/verify_golden.R, which must make a real HTTP POST to exercise the wire
+# contract. It usually arrives anyway as a transitive dependency of plumber, and that is
+# exactly the problem: gate #4 would then depend on a package no file asks for, and a
+# plumber bump could remove it. The "base R only" rule below governs the HEALTHCHECK, whose
+# job is to answer "is the process up" without a dependency that can fail on its own; a
+# verification script that POSTs JSON cannot be written that way.
+ARG CURL_VERSION=5.2.1
+
+# libcurl/libssl are needed by httpuv and the PPM client itself. This is the whole system
+# dependency set precisely because the R packages arrive as binaries.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        libcurl4-openssl-dev \
+        libssl-dev \
+        libxml2-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# remotes first, so the pinned installs below can be version-exact.
+RUN R -q -e "install.packages('remotes')"
+RUN R -q -e "remotes::install_version('plumber', version = '${PLUMBER_VERSION}', upgrade = 'never')"
+RUN R -q -e "remotes::install_version('netmeta', version = '${NETMETA_VERSION}', upgrade = 'never')"
+RUN R -q -e "remotes::install_version('curl', version = '${CURL_VERSION}', upgrade = 'never')"
+
+# Fail the BUILD rather than the first request if any package cannot load. `curl` is
+# included so a missing verification dependency surfaces here and not when someone finally
+# sits down to run gate #4.
+RUN R -q -e "library(plumber); library(netmeta); library(curl); cat('netmeta', as.character(packageVersion('netmeta')), '\n')"
+
+WORKDIR /app
+COPY nma-sidecar/plumber.R /app/plumber.R
+# The golden-parity check runs INSIDE the container, because it needs netmeta's own bundled
+# datasets. Shipping it in the image is what makes stop-and-review gate #4 runnable on any
+# host that has the sidecar, rather than only on a developer machine with R installed.
+COPY nma-sidecar/golden/verify_golden.R /app/golden/verify_golden.R
+
+EXPOSE 8000
+
+# Base R only. Probing with httr or curl would add a package to the image for the sake of
+# the healthcheck, and a healthcheck that needs its own dependency can fail for reasons
+# that have nothing to do with the service being up.
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD R -q -e "q(status = tryCatch({ con <- url('http://127.0.0.1:8000/healthz'); on.exit(close(con)); if (length(readLines(con, warn = FALSE))) 0L else 1L }, error = function(e) 1L))"
+
+CMD ["R", "-q", "-e", "plumber::pr_run(plumber::pr('/app/plumber.R'), host = '0.0.0.0', port = 8000)"]

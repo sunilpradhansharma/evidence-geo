@@ -1,0 +1,678 @@
+# =============================================================================
+# Cortex Analyst semantic model — Evidence Monitoring Agent
+# -----------------------------------------------------------------------------
+# Built on the analytics views created by snowflake_views.sql. Upload this file
+# to a stage and point a Cortex Analyst service / Snowsight "Ask Analyst" at it:
+#
+#   USE ROLE EVIDENCE_APP_ROLE;
+#   CREATE STAGE IF NOT EXISTS EVIDENCE_DB.PUBLIC.SEMANTIC_MODELS
+#     DIRECTORY = (ENABLE = TRUE);
+#   PUT file://cortex_semantic_model.yaml @EVIDENCE_DB.PUBLIC.SEMANTIC_MODELS
+#     AUTO_COMPRESS = FALSE OVERWRITE = TRUE;
+#
+# All measures aggregate the LATEST score per response (the views already dedupe
+# via QUALIFY), so answers match the app dashboard.
+# =============================================================================
+
+name: evidence_monitoring
+description: >-
+  Competitive LLM monitoring for AbbVie brands. Tracks how target LLMs (Claude,
+  Nova, Llama, Gemini, etc.) describe our brands across personas and therapeutic
+  areas: sentiment, competitive positioning, model consensus, intent mix, alerts,
+  and per-run cost/volume.
+
+custom_instructions: >-
+  When the user asks to summarize, describe, explain, list, or asks "why" or "what
+  did the models say" about alerts, responses, scoring, or consensus, return the
+  relevant free-text column for the matching rows (alerts.detail,
+  response_scores.scoring_rationale, response_scores.key_claims,
+  consensus.final_answer, consensus.agreed_recommendation) rather than only counting
+  rows. For social questions about what people are saying online, return social_posts.text
+  or social_comments.text. Social metrics are a captured sample, not market-level share of
+  voice; comment sentiment is a separate dimension from post sentiment. Treat brand, model,
+  persona, and rule names as case-insensitive.
+
+tables:
+  # ---------------------------------------------------------------------------
+  # Core fact: one row per response with its latest sentiment/position score
+  # ---------------------------------------------------------------------------
+  - name: response_scores
+    description: >-
+      One row per LLM response joined to its most recent score. The grain is a
+      single (response). Use this for sentiment, competitive positioning, brand,
+      persona, therapeutic-area, and intent analysis.
+    base_table:
+      database: EVIDENCE_DB
+      schema: PUBLIC
+      table: VW_RESPONSE_LATEST_SCORE
+    primary_key:
+      columns:
+        - RESPONSE_ID
+    dimensions:
+      - name: response_id
+        expr: RESPONSE_ID
+        data_type: TEXT
+        description: Unique id of the LLM response.
+        unique: true
+      - name: run_id
+        expr: RUN_ID
+        data_type: TEXT
+        description: Monitoring run this response belongs to.
+      - name: llm
+        expr: LLM_NAME
+        data_type: TEXT
+        description: The target LLM that produced the response.
+        synonyms: [model, ai model, llm name, target model]
+        sample_values: [Claude, Nova, Llama, Gemini, GPT-4o, EvidenceMD]
+      - name: persona
+        expr: PERSONA
+        data_type: TEXT
+        description: Audience persona the question represents.
+        synonyms: [audience, user type]
+        sample_values: [Prospect, Patient, Provider]
+      - name: indication
+        expr: THERAPEUTIC_AREA
+        data_type: TEXT
+        description: >-
+          Specific indication the question targets. For Dermatology,
+          Gastroenterology, Oncology, Rheumatology and Neuroscience this is the
+          broad area itself; for Lupron it is the disease (Endometriosis,
+          Uterine Fibroids, Central Precocious Puberty). Use therapeutic_area to
+          roll these up to the parent area. "Immunology" is a RETIRED value that
+          appears only on rows predating the Dermatology/Gastroenterology split.
+        synonyms: [indication, condition, disease]
+        sample_values: [Dermatology, Gastroenterology, Oncology, Rheumatology, Neuroscience, Central Precocious Puberty, Endometriosis, Uterine Fibroids]
+      - name: therapeutic_area
+        expr: THERAPEUTIC_AREA_GROUP
+        data_type: TEXT
+        description: Parent therapeutic area (specific indications rolled up).
+        synonyms: [therapy area, ta, area, specialty, indication area]
+        sample_values: [Dermatology, Gastroenterology, Oncology, Rheumatology, Neuroscience, "Women's Health", Endocrinology]
+      - name: brand
+        expr: BRAND_FOCUS
+        data_type: TEXT
+        description: AbbVie brand the question focuses on.
+        synonyms: [product, drug, brand focus]
+        sample_values: [Humira, Skyrizi, Rinvoq, Imbruvica, Venclexta, Lupron Depot, Lupron Depot-Ped, Vraylar]
+      - name: domain
+        expr: DOMAIN
+        data_type: TEXT
+        description: Topic domain of the question.
+      - name: intent_type
+        expr: INTENT_TYPE
+        data_type: TEXT
+        description: Classified intent of the underlying question.
+        synonyms: [intent, question type]
+        sample_values: [CLINICAL, EXPERIENTIAL, SCREENING, SHORTHAND]
+      - name: competitive_position
+        expr: COMPETITIVE_POSITION
+        data_type: TEXT
+        description: How the LLM positioned the brand competitively.
+        synonyms: [positioning, position, recommendation tier]
+        sample_values:
+          - FIRST_LINE_RECOMMENDED
+          - AMONG_OPTIONS
+          - SECOND_LINE
+          - NOT_RECOMMENDED
+          - NOT_MENTIONED
+      - name: consensus_level
+        expr: CONSENSUS_LEVEL
+        data_type: TEXT
+        description: Cross-model agreement level recorded on the response.
+        sample_values: [FULL, PARTIAL, MISSING]
+      - name: status
+        expr: STATUS
+        data_type: TEXT
+        description: Outcome status of the response.
+        sample_values: [SUCCESS, FAILED, TRUNCATED, BLOCKED]
+      - name: scoring_rationale
+        expr: SCORING_RATIONALE
+        data_type: TEXT
+        description: >-
+          Free-text explanation of why this response received its sentiment and
+          competitive-position score. Use it to answer "why" questions and to
+          summarize the reasoning behind a brand's or model's scores.
+        synonyms: [rationale, reason, why, explanation, justification, scoring reason]
+      - name: key_claims
+        expr: KEY_CLAIMS
+        data_type: TEXT
+        description: >-
+          Notable claims the LLM made in the response (JSON array of strings). Use to
+          summarize what models actually claimed about a brand.
+        synonyms: [claims, statements, assertions, what was said, talking points]
+    time_dimensions:
+      - name: response_time
+        expr: TIMESTAMP_UTC
+        data_type: TIMESTAMP
+        description: When the response was produced.
+        synonyms: [date, response date, time]
+      - name: scored_time
+        expr: SCORED_AT
+        data_type: TIMESTAMP
+        description: When the latest score was computed.
+    measures:
+      - name: response_count
+        expr: COUNT(RESPONSE_ID)
+        data_type: NUMBER
+        description: Number of scored responses.
+        synonyms: [responses, number of responses, count]
+        default_aggregation: sum
+      - name: avg_sentiment
+        expr: AVG(SENTIMENT_SCORE)
+        data_type: NUMBER
+        description: Average sentiment (-1 negative to +1 positive).
+        synonyms: [sentiment, mean sentiment, average sentiment]
+      - name: min_sentiment
+        expr: MIN(SENTIMENT_SCORE)
+        data_type: NUMBER
+        description: Lowest sentiment score.
+      - name: max_sentiment
+        expr: MAX(SENTIMENT_SCORE)
+        data_type: NUMBER
+        description: Highest sentiment score.
+      - name: positive_responses
+        expr: SUM(IFF(SENTIMENT_SCORE > 0.2, 1, 0))
+        data_type: NUMBER
+        description: Responses with positive sentiment (> 0.2).
+      - name: negative_responses
+        expr: SUM(IFF(SENTIMENT_SCORE < -0.2, 1, 0))
+        data_type: NUMBER
+        description: Responses with negative sentiment (< -0.2).
+
+  # ---------------------------------------------------------------------------
+  # Monitoring runs: cost / volume / consensus rollup (one row per run)
+  # ---------------------------------------------------------------------------
+  - name: runs
+    description: One row per monitoring run with token, cost, and consensus rollups.
+    base_table:
+      database: EVIDENCE_DB
+      schema: PUBLIC
+      table: VW_RUN_KPIS
+    primary_key:
+      columns:
+        - RUN_ID
+    dimensions:
+      - name: run_id
+        expr: RUN_ID
+        data_type: TEXT
+        description: Unique run id.
+        unique: true
+      - name: trigger_type
+        expr: TRIGGER_TYPE
+        data_type: TEXT
+        description: What triggered the run.
+        synonyms: [trigger, run trigger]
+        sample_values: [MANUAL, SCHEDULED, DRY_RUN]
+      - name: status
+        expr: STATUS
+        data_type: TEXT
+        description: Run status.
+        sample_values: [COMPLETED, CANCELLED, RUNNING, FAILED]
+    time_dimensions:
+      - name: started_at
+        expr: STARTED_AT
+        data_type: TIMESTAMP
+        description: Run start time.
+      - name: ended_at
+        expr: ENDED_AT
+        data_type: TIMESTAMP
+        description: Run end time.
+    measures:
+      - name: run_count
+        expr: COUNT(RUN_ID)
+        data_type: NUMBER
+        description: Number of runs.
+        default_aggregation: sum
+      - name: questions_attempted
+        expr: SUM(QUESTIONS_ATTEMPTED)
+        data_type: NUMBER
+        description: Total questions attempted.
+      - name: responses_success
+        expr: SUM(RESPONSES_SUCCESS)
+        data_type: NUMBER
+        description: Successful responses.
+      - name: responses_failed
+        expr: SUM(RESPONSES_FAILED)
+        data_type: NUMBER
+        description: Failed responses.
+      - name: total_tokens
+        expr: SUM(TOTAL_TOKENS)
+        data_type: NUMBER
+        description: Total tokens consumed.
+        synonyms: [tokens, token usage]
+      - name: estimated_cost_usd
+        expr: SUM(ESTIMATED_COST_USD)
+        data_type: NUMBER
+        description: Estimated cost in USD.
+        synonyms: [cost, spend, dollars]
+      - name: alerts_triggered
+        expr: SUM(ALERTS_TRIGGERED)
+        data_type: NUMBER
+        description: Alerts raised during the run.
+      - name: consensus_full
+        expr: SUM(CONSENSUS_FULL)
+        data_type: NUMBER
+        description: Questions with full model consensus.
+      - name: consensus_partial
+        expr: SUM(CONSENSUS_PARTIAL)
+        data_type: NUMBER
+        description: Questions with partial consensus.
+      - name: consensus_missing
+        expr: SUM(CONSENSUS_MISSING)
+        data_type: NUMBER
+        description: Questions with missing consensus.
+
+  # ---------------------------------------------------------------------------
+  # Alerts (one row per alert)
+  # ---------------------------------------------------------------------------
+  - name: alerts
+    description: Compliance / quality alerts raised on responses.
+    base_table:
+      database: EVIDENCE_DB
+      schema: PUBLIC
+      table: ALERTS
+    primary_key:
+      columns:
+        - ALERT_ID
+    dimensions:
+      - name: alert_id
+        expr: ALERT_ID
+        data_type: TEXT
+        unique: true
+        description: Unique alert id.
+      - name: response_id
+        expr: RESPONSE_ID
+        data_type: TEXT
+        description: Response that triggered the alert.
+      - name: rule_triggered
+        expr: RULE_TRIGGERED
+        data_type: TEXT
+        description: The alert rule that fired.
+        synonyms: [rule, alert rule, alert type]
+        sample_values: [LOW_SENTIMENT, NOT_RECOMMENDED, COMPETITOR_ADVANTAGE]
+      - name: acknowledged
+        expr: ACKNOWLEDGED
+        data_type: BOOLEAN
+        description: Whether the alert has been acknowledged.
+      - name: detail
+        expr: DETAIL
+        data_type: TEXT
+        description: >-
+          Human-readable explanation of why the alert fired (for example which
+          competitor out-scored the focus brand and by how much). Use this to
+          summarize, describe, or explain individual alerts.
+        synonyms: [details, detail, explanation, description, reason, what the alert says]
+    time_dimensions:
+      - name: created_at
+        expr: CREATED_AT
+        data_type: TIMESTAMP
+        description: When the alert was created.
+    measures:
+      - name: alert_count
+        expr: COUNT(ALERT_ID)
+        data_type: NUMBER
+        description: Number of alerts.
+        default_aggregation: sum
+
+  # ---------------------------------------------------------------------------
+  # Consensus records (one row per question per run)
+  # ---------------------------------------------------------------------------
+  - name: consensus
+    description: Per-question cross-model consensus evaluations.
+    base_table:
+      database: EVIDENCE_DB
+      schema: PUBLIC
+      table: CONSENSUS_RECORDS
+    primary_key:
+      columns:
+        - CONSENSUS_ID
+    dimensions:
+      - name: consensus_id
+        expr: CONSENSUS_ID
+        data_type: TEXT
+        unique: true
+        description: Unique consensus record id.
+      - name: run_id
+        expr: RUN_ID
+        data_type: TEXT
+        description: Run this evaluation belongs to.
+      - name: question_id
+        expr: QUESTION_ID
+        data_type: TEXT
+        description: Question evaluated.
+      - name: consensus_level
+        expr: CONSENSUS_LEVEL
+        data_type: TEXT
+        description: Agreement level across models.
+        sample_values: [FULL, PARTIAL, MISSING]
+      - name: overall_position
+        expr: OVERALL_POSITION
+        data_type: TEXT
+        description: Synthesized competitive position across models.
+      - name: geo_fallback_used
+        expr: GEO_FALLBACK_USED
+        data_type: BOOLEAN
+        description: Whether GEO fallback was used for this evaluation.
+      - name: agreed_recommendation
+        expr: AGREED_RECOMMENDATION
+        data_type: TEXT
+        description: The recommendation the models agreed on for this question.
+        synonyms: [recommendation, agreed answer, consensus recommendation]
+      - name: final_answer
+        expr: FINAL_ANSWER
+        data_type: TEXT
+        description: >-
+          The synthesized final answer across models for this question. Use to
+          summarize the consensus conclusion.
+        synonyms: [consensus answer, synthesized answer, conclusion, final answer]
+      - name: divergence_points
+        expr: DIVERGENCE_POINTS
+        data_type: TEXT
+        description: >-
+          Where the models disagreed (JSON). Use to explain model disagreement for a
+          question.
+        synonyms: [disagreements, divergence, where models disagree, conflicts]
+    time_dimensions:
+      - name: created_at
+        expr: CREATED_AT
+        data_type: TIMESTAMP
+        description: When the consensus record was created.
+    measures:
+      - name: consensus_count
+        expr: COUNT(CONSENSUS_ID)
+        data_type: NUMBER
+        description: Number of consensus evaluations.
+        default_aggregation: sum
+      - name: avg_overall_sentiment
+        expr: AVG(OVERALL_SENTIMENT)
+        data_type: NUMBER
+        description: Average synthesized sentiment across questions.
+      - name: geo_fallback_count
+        expr: SUM(IFF(GEO_FALLBACK_USED, 1, 0))
+        data_type: NUMBER
+        description: Evaluations that used GEO fallback.
+
+  # ---------------------------------------------------------------------------
+  # Social Listening posts (complementary surface — captured public social sample)
+  # ---------------------------------------------------------------------------
+  - name: social_posts
+    description: >-
+      Captured public social posts (Reddit/TikTok/Instagram/Facebook/X) about monitored
+      therapies. Grain is one post. Use for social share of voice, POST sentiment, topics,
+      and adverse-event signals. These are captured-sample metrics, NOT market-level share
+      of voice; engagement differs by channel and is never summed across channels.
+    base_table:
+      database: EVIDENCE_DB
+      schema: PUBLIC
+      table: SOCIAL_POSTS
+    primary_key:
+      columns:
+        - ID
+    dimensions:
+      - name: post_id
+        expr: ID
+        data_type: NUMBER
+        description: Unique social post id.
+        unique: true
+      - name: channel
+        expr: CHANNEL
+        data_type: TEXT
+        description: Social channel the post came from.
+        synonyms: [platform, network, source channel]
+        sample_values: [reddit, tiktok, instagram, facebook, x]
+      - name: brand
+        expr: BRAND_FOCUS
+        data_type: TEXT
+        description: Monitored brand the post concerns.
+        synonyms: [product, drug, brand focus]
+      - name: therapeutic_area
+        expr: THERAPEUTIC_AREA
+        data_type: TEXT
+        description: Therapeutic area the post concerns.
+        synonyms: [ta, area, indication]
+      - name: domain
+        expr: DOMAIN
+        data_type: TEXT
+        description: Topic domain (Efficacy/Safety/Access/Comparative/General).
+      - name: topic
+        expr: TOPIC
+        data_type: TEXT
+        description: Short free-text theme of the post.
+        synonyms: [theme, subject]
+      - name: sentiment_label
+        expr: SENTIMENT_LABEL
+        data_type: TEXT
+        description: Bucketed post sentiment.
+        sample_values: [positive, neutral, negative]
+      - name: language
+        expr: LANGUAGE
+        data_type: TEXT
+        description: Detected source language (English when not translated).
+      - name: is_translated
+        expr: IS_TRANSLATED
+        data_type: BOOLEAN
+        description: Whether the post was auto-translated to English.
+      - name: ae_flag
+        expr: AE_FLAG
+        data_type: BOOLEAN
+        description: Whether the post was flagged as a possible adverse event.
+      - name: text
+        expr: TEXT
+        data_type: TEXT
+        description: >-
+          English (canonical) post text. Use to quote what people are actually saying online.
+        synonyms: [post, content, what people said, what people are saying]
+    time_dimensions:
+      - name: posted_at
+        expr: POSTED_AT
+        data_type: TIMESTAMP
+        description: When the post was published.
+    measures:
+      - name: post_count
+        expr: COUNT(ID)
+        data_type: NUMBER
+        description: Number of captured posts.
+        synonyms: [posts, number of posts]
+        default_aggregation: sum
+      - name: avg_sentiment
+        expr: AVG(SENTIMENT)
+        data_type: NUMBER
+        description: Average POST sentiment (-1 negative to +1 positive).
+        synonyms: [post sentiment, average post sentiment]
+      - name: avg_comment_sentiment
+        expr: AVG(COMMENT_SENTIMENT)
+        data_type: NUMBER
+        description: Average of each post's rolled-up comment sentiment.
+      - name: comments_captured
+        expr: SUM(COMMENTS_CAPTURED)
+        data_type: NUMBER
+        description: Total comments captured across these posts.
+      - name: ae_posts
+        expr: SUM(IFF(AE_FLAG, 1, 0))
+        data_type: NUMBER
+        description: Posts flagged as possible adverse events.
+
+  # ---------------------------------------------------------------------------
+  # Social Listening comments (SEPARATE sentiment dimension — the crowd's reaction)
+  # ---------------------------------------------------------------------------
+  - name: social_comments
+    description: >-
+      Captured public comments/replies on the social posts. Grain is one comment. Comment
+      sentiment is a SEPARATE dimension from post sentiment (the crowd's reaction vs the
+      original author). Use for comment sentiment and comment-level adverse-event signals.
+    base_table:
+      database: EVIDENCE_DB
+      schema: PUBLIC
+      table: SOCIAL_COMMENTS
+    primary_key:
+      columns:
+        - ID
+    dimensions:
+      - name: comment_id
+        expr: ID
+        data_type: NUMBER
+        description: Unique comment id.
+        unique: true
+      - name: post_id
+        expr: POST_ID
+        data_type: NUMBER
+        description: Parent post id this comment belongs to.
+      - name: channel
+        expr: CHANNEL
+        data_type: TEXT
+        description: Social channel the comment came from.
+        sample_values: [reddit, tiktok, instagram, facebook, x]
+      - name: sentiment_label
+        expr: SENTIMENT_LABEL
+        data_type: TEXT
+        description: Bucketed comment sentiment.
+        sample_values: [positive, neutral, negative]
+      - name: language
+        expr: LANGUAGE
+        data_type: TEXT
+        description: Detected source language (English when not translated).
+      - name: is_translated
+        expr: IS_TRANSLATED
+        data_type: BOOLEAN
+        description: Whether the comment was auto-translated to English.
+      - name: ae_flag
+        expr: AE_FLAG
+        data_type: BOOLEAN
+        description: Whether the comment was flagged as a possible adverse event.
+      - name: text
+        expr: TEXT
+        data_type: TEXT
+        description: >-
+          English (canonical) comment text. Use to quote what people are saying in replies.
+        synonyms: [comment, reply, what people said, what people are saying]
+    time_dimensions:
+      - name: posted_at
+        expr: POSTED_AT
+        data_type: TIMESTAMP
+        description: When the comment was posted.
+    measures:
+      - name: comment_count
+        expr: COUNT(ID)
+        data_type: NUMBER
+        description: Number of captured comments.
+        synonyms: [comments, number of comments]
+        default_aggregation: sum
+      - name: avg_sentiment
+        expr: AVG(SENTIMENT)
+        data_type: NUMBER
+        description: Average COMMENT sentiment (-1 negative to +1 positive).
+        synonyms: [comment sentiment, average comment sentiment]
+      - name: ae_comments
+        expr: SUM(IFF(AE_FLAG, 1, 0))
+        data_type: NUMBER
+        description: Comments flagged as possible adverse events.
+
+relationships:
+  - name: response_to_run
+    left_table: response_scores
+    right_table: runs
+    relationship_columns:
+      - left_column: RUN_ID
+        right_column: RUN_ID
+    relationship_type: many_to_one
+    join_type: left_outer
+  - name: alert_to_response
+    left_table: alerts
+    right_table: response_scores
+    relationship_columns:
+      - left_column: RESPONSE_ID
+        right_column: RESPONSE_ID
+    relationship_type: many_to_one
+    join_type: left_outer
+  - name: consensus_to_run
+    left_table: consensus
+    right_table: runs
+    relationship_columns:
+      - left_column: RUN_ID
+        right_column: RUN_ID
+    relationship_type: many_to_one
+    join_type: left_outer
+  - name: comment_to_post
+    left_table: social_comments
+    right_table: social_posts
+    relationship_columns:
+      - left_column: POST_ID
+        right_column: ID
+    relationship_type: many_to_one
+    join_type: left_outer
+
+verified_queries:
+  - name: avg_sentiment_by_brand
+    question: What is the average sentiment by brand?
+    sql: >-
+      SELECT brand, AVG(sentiment_score) AS avg_sentiment, COUNT(response_id) AS responses
+      FROM VW_RESPONSE_LATEST_SCORE
+      GROUP BY brand
+      ORDER BY avg_sentiment DESC
+  - name: lowest_sentiment_brand
+    question: Which brand has the lowest average sentiment?
+    sql: >-
+      SELECT brand, AVG(sentiment_score) AS avg_sentiment
+      FROM VW_RESPONSE_LATEST_SCORE
+      GROUP BY brand
+      ORDER BY avg_sentiment ASC
+      LIMIT 1
+  - name: positioning_by_llm
+    question: How does each model position our brands competitively?
+    sql: >-
+      SELECT llm_name AS llm, competitive_position, COUNT(*) AS n
+      FROM VW_RESPONSE_LATEST_SCORE
+      GROUP BY llm_name, competitive_position
+      ORDER BY llm, n DESC
+  - name: cost_by_run
+    question: What was the total cost and tokens per run?
+    sql: >-
+      SELECT run_id, total_tokens, estimated_cost_usd
+      FROM VW_RUN_KPIS
+      ORDER BY started_at DESC
+  - name: competitor_advantage_alerts
+    question: Summarize the competitor advantage alerts
+    sql: >-
+      SELECT detail, created_at
+      FROM ALERTS
+      WHERE rule_triggered = 'COMPETITOR_ADVANTAGE'
+      ORDER BY created_at DESC
+  - name: why_brand_low_sentiment
+    question: Why do models rate a brand negatively?
+    sql: >-
+      SELECT brand_focus, llm_name, sentiment_score, scoring_rationale
+      FROM VW_RESPONSE_LATEST_SCORE
+      WHERE sentiment_score < -0.2
+      ORDER BY sentiment_score ASC
+      LIMIT 25
+  - name: avg_comment_sentiment_by_brand
+    question: What is the average comment sentiment by brand?
+    sql: >-
+      SELECT p.BRAND_FOCUS AS brand, AVG(c.SENTIMENT) AS avg_comment_sentiment, COUNT(*) AS comments
+      FROM SOCIAL_COMMENTS c JOIN SOCIAL_POSTS p ON p.ID = c.POST_ID
+      GROUP BY p.BRAND_FOCUS
+      ORDER BY avg_comment_sentiment ASC
+  - name: most_negative_comment_channel
+    question: Which channel has the most negative comments?
+    sql: >-
+      SELECT CHANNEL, AVG(SENTIMENT) AS avg_comment_sentiment, COUNT(*) AS comments
+      FROM SOCIAL_COMMENTS
+      GROUP BY CHANNEL
+      ORDER BY avg_comment_sentiment ASC
+      LIMIT 1
+  - name: adverse_event_comments
+    question: Show adverse-event comments
+    sql: >-
+      SELECT CHANNEL, TEXT, POSTED_AT
+      FROM SOCIAL_COMMENTS
+      WHERE AE_FLAG = TRUE
+      ORDER BY POSTED_AT DESC
+      LIMIT 25
+  - name: post_vs_comment_sentiment_by_brand
+    question: How does post sentiment compare to comment sentiment by brand?
+    sql: >-
+      SELECT p.BRAND_FOCUS AS brand,
+             AVG(p.SENTIMENT) AS avg_post_sentiment,
+             AVG(c.SENTIMENT) AS avg_comment_sentiment
+      FROM SOCIAL_POSTS p LEFT JOIN SOCIAL_COMMENTS c ON c.POST_ID = p.ID
+      GROUP BY p.BRAND_FOCUS

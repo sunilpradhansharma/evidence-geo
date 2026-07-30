@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Brand Intelligence</title>
+    <meta
+      name="description"
+      content="Ema — Generative Engine Optimization platform that monitors how AI assistants represent your brand across clinical questions, sentiment, and consensus."
+    />
+    <meta name="theme-color" content="#0A3D3D" />
+
+    <!--
+      Type system: DM Sans (UI text) + Rajdhani (display numerics: KPI tiles,
+      big values) + DM Mono (tabular numerics / codes). Preconnected first so
+      the handshake finishes before the stylesheet lands; crossorigin is
+      required on the gstatic preconnect since the font files load via CORS.
+      display=swap keeps text visible during load via the system fallback.
+    -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Rajdhani:wght@500;600;700&display=swap"
+    />
+
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

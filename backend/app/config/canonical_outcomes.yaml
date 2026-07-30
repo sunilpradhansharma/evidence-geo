@@ -1,0 +1,509 @@
+# Canonical endpoint definitions — the SINGLE owner of outcome semantics.
+#
+# Nothing else defines an endpoint. brands.yaml `indications:` entries and every
+# AnalysisProtocolDefinition REFERENCE these IDs and never restate their meaning, so
+# there is exactly one place where "what does PASI90 at week 16 mean" is answered.
+# A referenced ID that is absent here is a startup validation error
+# (config.taxonomy.validate_config).
+#
+# IDs are deliberately indication-prefixed: PASI90 carries a different allowed window
+# in Plaque Psoriasis than it does in Psoriatic Arthritis, and remission means something
+# different during induction than during maintenance. One ID per (indication, endpoint,
+# timepoint, treatment phase).
+#
+# `match_tokens` (optional) is how a source's own wording is recognised as this endpoint.
+# It exists because compact labels like ACR20 appear verbatim in trial titles while prose
+# labels like "Clinical remission (modified Mayo)" never do — a registry writes
+# "Clinical Remission Per Adapted Mayo Score". Keeping the vocabulary HERE rather than in
+# the parser means adding a synonym is a reviewed config change, not a code change, and
+# every adapter (ClinicalTrials.gov, PubMed, published NMAs) matches identically.
+# Defaults to [endpoint] when absent. Matching is case- and punctuation-insensitive.
+#
+# Two endpoints that share match_tokens (UC induction vs maintenance remission) are
+# separated by `allowed_window`, which is why the windows must not overlap.
+#
+# `benefit_direction` is REQUIRED and has no default. It answers "does a higher event rate
+# mean a better outcome?", which is the only thing that turns a risk ratio into a statement
+# about which treatment is preferable. Every endpoint here today is a response or remission
+# rate, so all of them are HIGHER_IS_BETTER — but an adverse-event or discontinuation
+# endpoint is LOWER_IS_BETTER, and a default would silently invert every comparative verdict
+# on the first one added. Phase 8 refuses to grade a direction it has not been told
+# (NOT_COMPARABLE) rather than assuming one.
+#
+# Restart the backend after editing: the loader is lru_cache'd.
+
+outcomes:
+  # --- Tier 1: Plaque Psoriasis (Skyrizi) ---------------------------------------
+  PSO_PASI75_W16:
+    indication: Plaque Psoriasis
+    endpoint: PASI75
+    description: >-
+      >=75% improvement from baseline in the Psoriasis Area and Severity Index.
+    outcome_type: binary
+    nominal_timepoint_week: 16
+    allowed_window: { min_week: 12, max_week: 16 }
+    effect_measure: risk_ratio
+    benefit_direction: HIGHER_IS_BETTER
+    treatment_phase: PRIMARY
+
+  PSO_PASI90_W16:
+    indication: Plaque Psoriasis
+    endpoint: PASI90
+    description: >-
+      >=90% improvement from baseline in the Psoriasis Area and Severity Index. The
+      modern primary comparator endpoint in plaque psoriasis network meta-analyses.
+    outcome_type: binary
+    nominal_timepoint_week: 16
+    allowed_window: { min_week: 12, max_week: 16 }
+    effect_measure: risk_ratio
+    benefit_direction: HIGHER_IS_BETTER
+    treatment_phase: PRIMARY
+
+  PSO_PASI100_W16:
+    indication: Plaque Psoriasis
+    endpoint: PASI100
+    description: Complete skin clearance (100% PASI improvement).
+    outcome_type: binary
+    nominal_timepoint_week: 16
+    allowed_window: { min_week: 12, max_week: 16 }
+    effect_measure: risk_ratio
+    benefit_direction: HIGHER_IS_BETTER
+    treatment_phase: PRIMARY
+
+  # --- Tier 1: Rheumatoid Arthritis (Rinvoq) ------------------------------------
+  RA_ACR20_W12:
+    indication: Rheumatoid Arthritis
+    endpoint: ACR20
+    description: >-
+      >=20% improvement in the American College of Rheumatology core response criteria.
+    outcome_type: binary
+    nominal_timepoint_week: 12
+    allowed_window: { min_week: 12, max_week: 16 }
+    effect_measure: risk_ratio
+    benefit_direction: HIGHER_IS_BETTER
+    treatment_phase: PRIMARY
+
+  RA_ACR50_W12:
+    indication: Rheumatoid Arthritis
+    endpoint: ACR50
+    description: >-
+      >=50% ACR improvement. Preferred over ACR20 for discrimination between active
+      comparators; the primary node in most RA networks.
+    outcome_type: binary
+    nominal_timepoint_week: 12
+    allowed_window: { min_week: 12, max_week: 16 }
+    effect_measure: risk_ratio
+    benefit_direction: HIGHER_IS_BETTER
+    treatment_phase: PRIMARY
+
+  RA_ACR70_W12:
+    indication: Rheumatoid Arthritis
+    endpoint: ACR70
+    outcome_type: binary
+    nominal_timepoint_week: 12
+    allowed_window: { min_week: 12, max_week: 16 }
+    effect_measure: risk_ratio
+    benefit_direction: HIGHER_IS_BETTER
+    treatment_phase: PRIMARY
+
+  # --- Tier 2: Psoriatic Arthritis (Rinvoq + Skyrizi) ---------------------------
+  PSA_ACR20_W16:
+    indication: Psoriatic Arthritis
+    endpoint: ACR20
+    outcome_type: binary
+    nominal_timepoint_week: 16
+    allowed_window: { min_week: 12, max_week: 24 }
+    effect_measure: risk_ratio
+    benefit_direction: HIGHER_IS_BETTER
+    treatment_phase: PRIMARY
+
+  PSA_ACR50_W16:
+    indication: Psoriatic Arthritis
+    endpoint: ACR50
+    description: >-
+      The only network shared by Rinvoq and Skyrizi, and therefore the sharpest test
+      of indication-aware resolution.
+    outcome_type: binary
+    nominal_timepoint_week: 16
+    allowed_window: { min_week: 12, max_week: 24 }
+    effect_measure: risk_ratio
+    benefit_direction: HIGHER_IS_BETTER
+    treatment_phase: PRIMARY
+
+  PSA_PASI90_W16:
+    indication: Psoriatic Arthritis
+    endpoint: PASI90
+    description: >-
+      Skin response in the PsA population. Deliberately a SEPARATE ID from
+      PSO_PASI90_W16 — same endpoint, different population and different window.
+    outcome_type: binary
+    nominal_timepoint_week: 16
+    allowed_window: { min_week: 12, max_week: 24 }
+    effect_measure: risk_ratio
+    benefit_direction: HIGHER_IS_BETTER
+    treatment_phase: PRIMARY
+
+  # --- Tier 2: Atopic Dermatitis (Rinvoq) ---------------------------------------
+  AD_EASI75_W16:
+    indication: Atopic Dermatitis
+    endpoint: EASI75
+    description: >-
+      >=75% improvement in the Eczema Area and Severity Index.
+    outcome_type: binary
+    nominal_timepoint_week: 16
+    allowed_window: { min_week: 12, max_week: 16 }
+    effect_measure: risk_ratio
+    benefit_direction: HIGHER_IS_BETTER
+    treatment_phase: PRIMARY
+
+  AD_EASI90_W16:
+    indication: Atopic Dermatitis
+    endpoint: EASI90
+    outcome_type: binary
+    nominal_timepoint_week: 16
+    allowed_window: { min_week: 12, max_week: 16 }
+    effect_measure: risk_ratio
+    benefit_direction: HIGHER_IS_BETTER
+    treatment_phase: PRIMARY
+
+  AD_IGA01_W16:
+    indication: Atopic Dermatitis
+    endpoint: IGA 0/1
+    description: >-
+      Investigator Global Assessment of clear or almost clear with a >=2-grade
+      improvement from baseline.
+    # Registries and journals spell this at least four ways.
+    match_tokens: ["IGA 0/1", "vIGA-AD 0/1", "IGA 0 or 1", "IGA score of 0 or 1"]
+    outcome_type: binary
+    nominal_timepoint_week: 16
+    allowed_window: { min_week: 12, max_week: 16 }
+    effect_measure: risk_ratio
+    benefit_direction: HIGHER_IS_BETTER
+    treatment_phase: PRIMARY
+
+  # --- Tier 3: Ulcerative Colitis (Rinvoq + Skyrizi) ----------------------------
+  # Induction and maintenance are separate IDs. Mixing them in one network is a hard
+  # gate (TREATMENT_PHASE_MISMATCH), not a warning.
+  UC_REMISSION_INDUCTION_W8:
+    indication: Ulcerative Colitis
+    endpoint: Clinical remission (modified Mayo)
+    description: >-
+      Per-protocol remission definition must be harmonised at curation time; modified
+      Mayo and full Mayo are not interchangeable.
+    # Shares tokens with the maintenance ID below; the allowed_window separates them.
+    match_tokens: ["clinical remission"]
+    outcome_type: binary
+    nominal_timepoint_week: 8
+    allowed_window: { min_week: 8, max_week: 12 }
+    effect_measure: risk_ratio
+    benefit_direction: HIGHER_IS_BETTER
+    treatment_phase: INDUCTION
+
+  UC_ENDOSCOPIC_IMPROVEMENT_INDUCTION_W8:
+    indication: Ulcerative Colitis
+    endpoint: Endoscopic improvement
+    match_tokens: ["endoscopic improvement"]
+    outcome_type: binary
+    nominal_timepoint_week: 8
+    allowed_window: { min_week: 8, max_week: 12 }
+    effect_measure: risk_ratio
+    benefit_direction: HIGHER_IS_BETTER
+    treatment_phase: INDUCTION
+
+  UC_REMISSION_MAINTENANCE_W52:
+    indication: Ulcerative Colitis
+    endpoint: Clinical remission (modified Mayo)
+    description: >-
+      Maintenance populations are re-randomised induction responders, so this is not
+      comparable with an induction estimate under any circumstances.
+    match_tokens: ["clinical remission"]
+    outcome_type: binary
+    nominal_timepoint_week: 52
+    allowed_window: { min_week: 44, max_week: 60 }
+    effect_measure: risk_ratio
+    benefit_direction: HIGHER_IS_BETTER
+    treatment_phase: MAINTENANCE
+
+  # --- Tier 3: Crohn's Disease (Rinvoq + Skyrizi) -------------------------------
+  CD_REMISSION_INDUCTION_W12:
+    indication: Crohn's Disease
+    endpoint: Clinical remission (CDAI or SF/APS)
+    description: >-
+      CDAI-defined and stool-frequency/abdominal-pain-defined remission must be
+      harmonised before pooling; the choice is a protocol decision.
+    match_tokens: ["clinical remission", "CDAI remission"]
+    outcome_type: binary
+    nominal_timepoint_week: 12
+    allowed_window: { min_week: 8, max_week: 16 }
+    effect_measure: risk_ratio
+    benefit_direction: HIGHER_IS_BETTER
+    treatment_phase: INDUCTION
+
+  CD_ENDOSCOPIC_RESPONSE_INDUCTION_W12:
+    indication: Crohn's Disease
+    endpoint: Endoscopic response (SES-CD)
+    match_tokens: ["endoscopic response"]
+    outcome_type: binary
+    nominal_timepoint_week: 12
+    allowed_window: { min_week: 8, max_week: 16 }
+    effect_measure: risk_ratio
+    benefit_direction: HIGHER_IS_BETTER
+    treatment_phase: INDUCTION
+
+  CD_REMISSION_MAINTENANCE_W52:
+    indication: Crohn's Disease
+    endpoint: Clinical remission (CDAI or SF/APS)
+    match_tokens: ["clinical remission", "CDAI remission"]
+    outcome_type: binary
+    nominal_timepoint_week: 52
+    allowed_window: { min_week: 44, max_week: 60 }
+    effect_measure: risk_ratio
+    benefit_direction: HIGHER_IS_BETTER
+    treatment_phase: MAINTENANCE
+
+  # --- Tier 4: Axial spondyloarthritis (Rinvoq) ---------------------------------
+  AS_ASAS40_W14:
+    indication: Ankylosing Spondylitis
+    endpoint: ASAS40
+    description: >-
+      Assessment of SpondyloArthritis international Society 40% response. Sparse
+      networks and lower arm-level availability — expect Level-4 gaps here.
+    outcome_type: binary
+    nominal_timepoint_week: 14
+    allowed_window: { min_week: 12, max_week: 16 }
+    effect_measure: risk_ratio
+    benefit_direction: HIGHER_IS_BETTER
+    treatment_phase: PRIMARY
+
+  # --- Dermatology: Hidradenitis Suppurativa (Humira) ---------------------------
+  # HiSCR is HS-specific and has no analogue in the psoriasis endpoints above, so it
+  # gets its own ID rather than reusing a PASI/EASI-style response definition. The
+  # 50% threshold is the field standard (PIONEER I/II) and is named explicitly
+  # because HiSCR75/90 exist and are NOT interchangeable with it.
+  HS_HISCR50_W12:
+    indication: Hidradenitis Suppurativa
+    endpoint: HiSCR50
+    description: >-
+      >=50% reduction in total abscess and inflammatory-nodule count, with no increase
+      in abscess or draining-fistula count from baseline.
+    match_tokens: ["HiSCR", "HiSCR50", "HiSCR 50", "Hidradenitis Suppurativa Clinical Response"]
+    outcome_type: binary
+    nominal_timepoint_week: 12
+    allowed_window: { min_week: 12, max_week: 16 }
+    effect_measure: risk_ratio
+    benefit_direction: HIGHER_IS_BETTER
+    treatment_phase: PRIMARY
+
+  NRAXSPA_ASAS40_W14:
+    indication: Non-radiographic Axial Spondyloarthritis
+    endpoint: ASAS40
+    outcome_type: binary
+    nominal_timepoint_week: 14
+    allowed_window: { min_week: 12, max_week: 16 }
+    effect_measure: risk_ratio
+    benefit_direction: HIGHER_IS_BETTER
+    treatment_phase: PRIMARY
+
+# =====================================================================================
+# BEYOND THE IMMUNOLOGY PROGRAMME
+# =====================================================================================
+# REQUIRES MEDICAL SIGN-OFF. Every entry below is a clinical assertion — which measure
+# is the field's comparator endpoint, at which landmark, and how wide a reported
+# timepoint may drift and still count as that landmark. None has been reviewed yet.
+#
+# These exist so the `indications:` overlay can name the brands and competitive field
+# for Imbruvica, Venclexta, Vraylar and Lupron; without them `validate_config` refuses
+# to start. Nothing here is ingested by default: `POST /evidence-ingestion/trials`
+# searches `full_depth_drugs()`, which is still only Rinvoq, Skyrizi, Humira, Tremfya.
+#
+# Deliberately BINARY LANDMARK RATES only. `outcome_type` is (binary | continuous) and
+# `effect_measure` feeds the NMA engines and the R sidecar, so a time-to-event endpoint
+# cannot be stated here honestly. PFS and OS are therefore ABSENT rather than coerced
+# into a shape that would misrepresent them — adding them is a separate change that has
+# to extend the vocabulary and every engine that reads it.
+
+  # --- Oncology: Imbruvica, Venclexta -------------------------------------------
+  # Response rates, not survival. The windows are wide because oncology response is
+  # assessed per protocol-defined restaging cycle rather than on a fixed study week.
+  CLL_ORR_W48:
+    indication: Chronic Lymphocytic Leukemia
+    endpoint: Overall response rate
+    description: >-
+      Investigator-assessed overall response (CR + CRi + nPR + PR) per iwCLL 2018.
+      Basis: RESONATE-2, ELEVATE-TN, CLL14.
+    match_tokens: ["overall response rate", "ORR", "overall response"]
+    outcome_type: binary
+    nominal_timepoint_week: 48
+    allowed_window: { min_week: 24, max_week: 60 }
+    effect_measure: risk_ratio
+    benefit_direction: HIGHER_IS_BETTER
+    treatment_phase: PRIMARY
+
+  MCL_ORR_W24:
+    indication: Mantle Cell Lymphoma
+    endpoint: Overall response rate
+    description: >-
+      Overall response (CR + PR) per the Lugano criteria. A separate ID from
+      CLL_ORR_W48 because the restaging schedule and the response criteria differ.
+    match_tokens: ["overall response rate", "ORR", "overall response"]
+    outcome_type: binary
+    nominal_timepoint_week: 24
+    allowed_window: { min_week: 12, max_week: 48 }
+    effect_measure: risk_ratio
+    benefit_direction: HIGHER_IS_BETTER
+    treatment_phase: PRIMARY
+
+  WM_MAJOR_RESPONSE_W48:
+    indication: Waldenstrom's Macroglobulinemia
+    endpoint: Major response rate
+    description: >-
+      Partial response or better (>=PR) per IWWM-6. Major response, NOT overall
+      response: minor responses are counted in ORR and are not interchangeable with
+      this endpoint.
+    match_tokens: ["major response rate", "major response"]
+    outcome_type: binary
+    nominal_timepoint_week: 48
+    allowed_window: { min_week: 24, max_week: 72 }
+    effect_measure: risk_ratio
+    benefit_direction: HIGHER_IS_BETTER
+    treatment_phase: PRIMARY
+
+  AML_CR_CRI_W24:
+    indication: Acute Myeloid Leukemia
+    endpoint: Composite complete remission (CR + CRi)
+    description: >-
+      Complete remission plus complete remission with incomplete haematologic
+      recovery, per ELN. Basis: VIALE-A. The composite is named explicitly because
+      CR alone is a different, stricter endpoint and the two are often conflated.
+    match_tokens: ["composite complete remission", "CR + CRi", "CRc"]
+    outcome_type: binary
+    nominal_timepoint_week: 24
+    allowed_window: { min_week: 12, max_week: 36 }
+    effect_measure: risk_ratio
+    benefit_direction: HIGHER_IS_BETTER
+    treatment_phase: PRIMARY
+
+  # --- Neuroscience: Vraylar ----------------------------------------------------
+  # Each scale is bound to ONE indication: a PANSS responder rate and a MADRS
+  # responder rate are not comparable quantities, so they never share an ID.
+  SCZ_PANSS_RESPONSE_W6:
+    indication: Schizophrenia
+    endpoint: PANSS responder
+    description: >-
+      >=30% reduction from baseline in the Positive and Negative Syndrome Scale
+      total score. The binary counterpart of the usual continuous PANSS change
+      endpoint, chosen because a responder rate is poolable as a risk ratio.
+    match_tokens: ["PANSS responder", "PANSS response", "PANSS 30"]
+    outcome_type: binary
+    nominal_timepoint_week: 6
+    allowed_window: { min_week: 4, max_week: 8 }
+    effect_measure: risk_ratio
+    benefit_direction: HIGHER_IS_BETTER
+    treatment_phase: PRIMARY
+
+  BPI_YMRS_RESPONSE_W3:
+    indication: Bipolar I Disorder
+    endpoint: YMRS responder
+    description: >-
+      >=50% reduction from baseline in the Young Mania Rating Scale total score in
+      acute manic or mixed episodes. Week 3 is the field's standard acute-mania
+      landmark, which is why this window does not overlap the MDD one.
+    match_tokens: ["YMRS responder", "YMRS response"]
+    outcome_type: binary
+    nominal_timepoint_week: 3
+    allowed_window: { min_week: 3, max_week: 4 }
+    effect_measure: risk_ratio
+    benefit_direction: HIGHER_IS_BETTER
+    treatment_phase: PRIMARY
+
+  MDD_MADRS_RESPONSE_W6:
+    indication: Major Depressive Disorder
+    endpoint: MADRS responder
+    description: >-
+      >=50% reduction from baseline in the Montgomery-Asberg Depression Rating Scale
+      total score, ADJUNCTIVE to an antidepressant. Adjunctive is load-bearing: it is
+      the setting Vraylar and its comparators are approved in, and monotherapy MDD
+      trials are a different population.
+    match_tokens: ["MADRS responder", "MADRS response"]
+    outcome_type: binary
+    nominal_timepoint_week: 6
+    allowed_window: { min_week: 6, max_week: 8 }
+    effect_measure: risk_ratio
+    benefit_direction: HIGHER_IS_BETTER
+    treatment_phase: PRIMARY
+
+  # --- Women's Health: Lupron Depot ---------------------------------------------
+  ENDO_DYSMENORRHEA_RESPONSE_W12:
+    indication: Endometriosis
+    endpoint: Dysmenorrhoea responder
+    description: >-
+      Clinically meaningful reduction in dysmenorrhoea on a numeric rating scale with
+      no increase in analgesic use. Basis: the ELARIS EM-I/II co-primary responder
+      definition.
+    match_tokens: ["dysmenorrhea responder", "dysmenorrhoea responder", "dysmenorrhea response"]
+    outcome_type: binary
+    nominal_timepoint_week: 12
+    allowed_window: { min_week: 8, max_week: 16 }
+    effect_measure: risk_ratio
+    benefit_direction: HIGHER_IS_BETTER
+    treatment_phase: PRIMARY
+
+  UF_MBL_RESPONSE_W24:
+    indication: Uterine Fibroids
+    endpoint: Menstrual blood loss responder
+    description: >-
+      Menstrual blood loss <80 mL AND >=50% reduction from baseline, measured by the
+      alkaline haematin method. The measurement method is named because
+      patient-reported bleeding scores are not interchangeable with it.
+    match_tokens: ["menstrual blood loss responder", "MBL responder", "bleeding responder"]
+    outcome_type: binary
+    nominal_timepoint_week: 24
+    allowed_window: { min_week: 20, max_week: 28 }
+    effect_measure: risk_ratio
+    benefit_direction: HIGHER_IS_BETTER
+    treatment_phase: PRIMARY
+
+  # --- Endocrinology: Lupron Depot-Ped ------------------------------------------
+  CPP_LH_SUPPRESSION_W24:
+    indication: Central Precocious Puberty
+    endpoint: LH suppression
+    description: >-
+      Proportion achieving peak luteinising hormone <4 IU/L on GnRH-agonist
+      stimulation testing, i.e. suppression to the prepubertal range. HIGHER is
+      better here because the endpoint is the proportion SUPPRESSED, not the
+      hormone level itself.
+    match_tokens: ["LH suppression", "luteinizing hormone suppression", "peak LH"]
+    outcome_type: binary
+    nominal_timepoint_week: 24
+    allowed_window: { min_week: 20, max_week: 28 }
+    effect_measure: risk_ratio
+    benefit_direction: HIGHER_IS_BETTER
+    treatment_phase: PRIMARY
+
+# Population strata are owned here too, for the same reason endpoints are: a stratum
+# label that means different things in two networks makes transitivity unverifiable.
+population_strata:
+  BIO_NAIVE:
+    label: Biologic-naive
+    description: No prior exposure to a biologic or targeted synthetic DMARD.
+  BIO_EXPERIENCED:
+    label: Biologic-experienced
+    description: >-
+      Prior exposure to at least one biologic or targeted synthetic DMARD, whether
+      for inadequate response or intolerance.
+  TNF_IR:
+    label: TNF inadequate responder
+    description: >-
+      Inadequate response or intolerance to at least one TNF inhibitor. A strict
+      subset of BIO_EXPERIENCED — the two must never be pooled silently.
+  MTX_IR:
+    label: Methotrexate inadequate responder
+    description: Inadequate response or intolerance to methotrexate.
+  CSDMARD_IR:
+    label: Conventional synthetic DMARD inadequate responder
+    description: Inadequate response or intolerance to at least one csDMARD.
+  MIXED:
+    label: Mixed / unstratified
+    description: >-
+      Population is not separable from the published report. Usable only when the
+      governing protocol explicitly permits an unstratified analysis.

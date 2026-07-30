@@ -1,0 +1,79 @@
+# Web-search question harvester (Discovery feature) configuration.
+#
+# Content-agnostic (SE-007): this file holds NO brand/competitor/indication names.
+# Those are pulled from brands.yaml at runtime and substituted into the query
+# templates below. Editing sources or phrasings here requires no code change.
+
+tavily:
+  enabled: true
+  search_depth: advanced          # basic | advanced (advanced = richer extracted content)
+  max_results_per_query: 12       # Balanced coverage
+  include_answer: false           # we want the source pages, not Tavily's synthesized answer
+  include_raw_content: true       # full cleaned page text = more mined questions (higher Tavily + LLM cost)
+  # Allowlist of public communities where real patients/prospects/providers ask
+  # questions. Adding a new site = one line here, no code change.
+  include_domains:
+    - reddit.com
+    - quora.com
+    - drugs.com
+    - healthunlocked.com
+    - patient.info
+    - inspire.com
+    - medhelp.org
+    - healthboards.com
+    - patientslikeme.com
+    - reddit.com/r/AskDocs
+    # Rheumatology patient communities (RA-specific; surface only for RA-relevant queries).
+    - myrateam.com
+    - bezzyra.com
+  exclude_domains: []
+
+# Query templates. Placeholders {brand}, {competitor}, {indication} are filled
+# from brands.yaml (focus_brands, competitors, indications) at runtime.
+query_templates:
+  - "{brand} side effects"
+  - "{brand} reviews patient experience"
+  - "is {brand} safe"
+  - "{brand} vs {competitor}"
+  - "{brand} cost insurance"
+  - "{indication} treatment options"
+  - "{brand} long term effects"
+  - "switching from {brand}"
+  - "starting {brand} what to expect"
+
+# Persona-specific phrasings — how each of the three personas actually asks.
+# Queries built from these are tagged with that persona as a classification prior.
+persona_query_templates:
+  Prospect:   # exploring / newly diagnosed / choosing a therapy
+    - "newly diagnosed {indication} treatment options"
+    - "is {brand} right for me"
+    - "{brand} vs {competitor} which is better"
+    - "{brand} reviews is it worth it"
+    - "{indication} which biologic should I choose"
+  Patient:    # already on a therapy — experiential, practical
+    - "{brand} side effects my experience"
+    - "how long does {brand} take to work"
+    - "living with {indication} on {brand}"
+    - "{brand} during pregnancy or alcohol"
+    - "{brand} stopped working what next"
+  Provider:   # clinician / technical
+    - "{brand} dosing guidelines {indication}"
+    - "{brand} boxed warning monitoring"
+    - "{brand} vs {competitor} head to head trial"
+    - "{brand} mechanism of action"
+    - "{brand} contraindications screening"
+
+# Optional: bias which sites are searched per persona. If a persona is omitted,
+# the global tavily.include_domains list is used. Leave as {} to disable.
+persona_domains: {}
+#  Provider:
+#    - reddit.com/r/AskDocs
+
+harvest:
+  max_queries_per_run: 40         # cap fan-out to control API cost
+  max_items_per_run: 250          # cap raw search results processed
+  max_questions_per_item: 8       # Balanced coverage (avoid one page dominating the batch)
+  min_question_len: 15            # chars — drop fragments
+  max_question_len: 320           # chars — drop essays
+  classify_batch_size: 12         # questions per LLM tagging call
+  min_relevance: 0.4              # drop items the classifier deems off-topic

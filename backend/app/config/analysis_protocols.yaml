@@ -1,0 +1,188 @@
+# Analysis protocol definitions (X1 / Phase 6).
+#
+# METHODOLOGY ONLY. Three rules make this file safe to review in git:
+#
+#   1. There is NO approval state here and NO `content_hash` field. Approval lives in
+#      the `analysis_protocol_approvals` table, keyed by the hash. If approval were
+#      stored here, recording it would change the content, change the hash, and
+#      invalidate the approval that had just been granted. `app.evidence.protocols`
+#      REJECTS either key if it ever appears below.
+#   2. `content_hash` is DERIVED from the canonical content of one protocol block.
+#      Editing any methodology field changes the hash and therefore invalidates prior
+#      approvals — that is the intended behaviour, not a bug to work around.
+#   3. `canonical_outcome_id` REFERENCES canonical_outcomes.yaml and never restates the
+#      endpoint's meaning. An ID absent from there is a startup validation error.
+#
+# `approved_time_window` may be NARROWER than the outcome's own `allowed_window`, never
+# wider: the outcome file says what could count as Week 16, the statistician says what
+# this analysis will accept. A harmonisation proposal contradicting this window is
+# auto-rejected without escalation — the protocol wins without human involvement.
+#
+# Restart the backend after editing: the loader is lru_cache'd.
+
+protocols:
+
+  # --- Tier 1 -----------------------------------------------------------------------
+  # Single-route network: Skyrizi, Tremfya and Humira are all subcutaneous, and Rinvoq
+  # is correctly absent (not indicated in plaque psoriasis). With no route mixing the
+  # placebo differential cannot arise, so CONTRAST_ONLY needs no empirical defence here.
+  PSO_PASI90_W16_PRIMARY:
+    version: 1
+    indication: Plaque Psoriasis
+    canonical_outcome_id: PSO_PASI90_W16
+    population_stratum: null
+    treatment_phase: PRIMARY
+    estimand: >-
+      Relative risk of achieving PASI90 at Week 16 versus comparator, in the randomised
+      population as observed, with non-responder imputation for missing outcomes.
+    effect_measure: risk_ratio
+    # Narrower than the outcome's own [12, 16]: week 12 PASI90 readings exist but are
+    # early for a Week-16 primary comparison. A protocol may narrow, never widen.
+    approved_time_window: { min_week: 14, max_week: 16 }
+    dose_policy: SEPARATE_BY_APPROVED_DOSE
+    # Humira is in this network and adalimumab biosimilars are marketed, so this is a live
+    # choice, not a formality. Separation is the honest default: regulatory biosimilarity
+    # asserts molecular similarity, not interchangeability inside every comparison.
+    biosimilar_policy: SEPARATE_NODES
+    # Psoriasis trials are monotherapy. A combination arm here would be unusual enough that
+    # it should stand out as its own node rather than quietly join a monotherapy's.
+    combination_policy: OWN_NODE
+    missing_data_policy: NON_RESPONDER_IMPUTATION
+    zero_event_policy: TREATMENT_ARM_CONTINUITY_CORRECTION
+    model_selection_rule: NETMETA_IF_LOOPS_OR_MULTI_ARM_ELSE_BUCHER
+    heterogeneity_rule: RANDOM_EFFECTS_IF_I2_ABOVE_50
+    inconsistency_rule: NET_SPLIT_IF_INDEPENDENT_LOOPS
+    placebo_response_policy: CONTRAST_ONLY
+    route_mixing_policy: DISCLOSE_AND_PROCEED
+    sensitivity_analysis_rules:
+      - Exclude trials at high risk of bias and report divergence from the main analysis.
+    study_exclusion_criteria:
+      - Non-randomised or observational designs.
+      - Paediatric-only populations.
+    risk_of_bias_handling: SENSITIVITY_ANALYSIS_ONLY
+    min_studies: 3
+    min_nodes: 3
+
+  # Route-mixed (Rinvoq oral vs Humira SC) and the placebo differential is UNMEASURED —
+  # Phase 0 found only one route among the placebo arms reporting this outcome. Absence
+  # of a measurement is not evidence of equivalence, so this does NOT default to
+  # CONTRAST_ONLY. SENSITIVITY_REQUIRED forces the single-route comparison to be computed
+  # alongside and any divergence reported.
+  RA_ACR50_W12_PRIMARY:
+    version: 1
+    indication: Rheumatoid Arthritis
+    canonical_outcome_id: RA_ACR50_W12
+    population_stratum: MTX_IR
+    treatment_phase: PRIMARY
+    estimand: >-
+      Relative risk of achieving ACR50 at Week 12 versus comparator among
+      methotrexate-inadequate-responder patients, non-responder imputation applied.
+    effect_measure: risk_ratio
+    approved_time_window: { min_week: 12, max_week: 14 }
+    dose_policy: SEPARATE_BY_APPROVED_DOSE
+    biosimilar_policy: SEPARATE_NODES
+    # Background methotrexate is near-universal in the methotrexate-inadequate-responder
+    # population this protocol targets, so it is a BACKBONE rather than a combination
+    # partner: present on both sides of every contrast, where it cancels. OWN_NODE here
+    # would split essentially the whole network into "drug + MTX" singletons and destroy it.
+    combination_policy: POOL_WITH_BACKBONE
+    missing_data_policy: NON_RESPONDER_IMPUTATION
+    zero_event_policy: TREATMENT_ARM_CONTINUITY_CORRECTION
+    model_selection_rule: NETMETA_IF_LOOPS_OR_MULTI_ARM_ELSE_BUCHER
+    heterogeneity_rule: RANDOM_EFFECTS_IF_I2_ABOVE_50
+    inconsistency_rule: NET_SPLIT_IF_INDEPENDENT_LOOPS
+    placebo_response_policy: SENSITIVITY_REQUIRED
+    route_mixing_policy: DISCLOSE_AND_PROCEED
+    sensitivity_analysis_rules:
+      - Repeat the analysis restricted to subcutaneous comparators and report divergence.
+      - Exclude trials at high risk of bias and report divergence.
+    study_exclusion_criteria:
+      - Non-randomised or observational designs.
+      - Biologic-experienced-only populations, which belong to a separate stratum.
+    risk_of_bias_handling: SENSITIVITY_ANALYSIS_ONLY
+    min_studies: 3
+    min_nodes: 3
+
+  # --- Tier 2 -----------------------------------------------------------------------
+  # The sharpest test in the programme: Phase 0 found PsA is the only indication whose
+  # network contains all four focus drugs, with Rinvoq-vs-Humira DIRECT. Route-mixed and
+  # unmeasured, so SENSITIVITY_REQUIRED for the same reason as RA above.
+  PSA_ACR50_W16_PRIMARY:
+    version: 1
+    indication: Psoriatic Arthritis
+    canonical_outcome_id: PSA_ACR50_W16
+    population_stratum: null
+    treatment_phase: PRIMARY
+    estimand: >-
+      Relative risk of achieving ACR50 at Week 16 versus comparator in the randomised
+      population, non-responder imputation applied.
+    effect_measure: risk_ratio
+    approved_time_window: { min_week: 14, max_week: 18 }
+    dose_policy: SEPARATE_BY_APPROVED_DOSE
+    # MSB11022, an adalimumab biosimilar, appears in this indication's registry results
+    # (NCT04018599). It keeps its own node until someone approves pooling it onto Humira.
+    biosimilar_policy: SEPARATE_NODES
+    # Background csDMARD is permitted across this network rather than defining arms, so it
+    # is a backbone as in RA. This is also what makes the observed "Part 1 ADA MTX" arm
+    # resolving to Humira a DECISION rather than the accident it currently is.
+    combination_policy: POOL_WITH_BACKBONE
+    missing_data_policy: NON_RESPONDER_IMPUTATION
+    zero_event_policy: TREATMENT_ARM_CONTINUITY_CORRECTION
+    model_selection_rule: NETMETA_IF_LOOPS_OR_MULTI_ARM_ELSE_BUCHER
+    heterogeneity_rule: RANDOM_EFFECTS_IF_I2_ABOVE_50
+    inconsistency_rule: NET_SPLIT_IF_INDEPENDENT_LOOPS
+    placebo_response_policy: SENSITIVITY_REQUIRED
+    route_mixing_policy: DISCLOSE_AND_PROCEED
+    sensitivity_analysis_rules:
+      - Repeat the analysis restricted to subcutaneous comparators and report divergence.
+      - Restrict to the direct Rinvoq-versus-Humira evidence and compare with the network estimate.
+    study_exclusion_criteria:
+      - Non-randomised or observational designs.
+      - Trials whose registration mixes induction and maintenance without separable substudies.
+    risk_of_bias_handling: SENSITIVITY_ANALYSIS_ONLY
+    min_studies: 3
+    min_nodes: 3
+
+  # --- Tier 3 -----------------------------------------------------------------------
+  # Phase 0 MEASURED a 13.7pp placebo spread by route on this outcome (oral 18.8% vs SC
+  # 5.1%), well past the 5pp threshold. That measurement is what selects
+  # SENSITIVITY_REQUIRED here rather than an assumption about routes — and it is why the
+  # spread must be reported, not adjusted away. Note the direction reverses in Crohn's,
+  # which points to confounding by agent, so neither figure supports a claim about routes.
+  #
+  # treatment_phase is MAINTENANCE and phase-mixing is a hard gate: maintenance
+  # populations are re-randomised induction responders.
+  UC_REMISSION_MAINTENANCE_W52:
+    version: 1
+    indication: Ulcerative Colitis
+    canonical_outcome_id: UC_REMISSION_MAINTENANCE_W52
+    population_stratum: null
+    treatment_phase: MAINTENANCE
+    estimand: >-
+      Relative risk of clinical remission at Week 52 among induction responders
+      re-randomised to maintenance, versus comparator.
+    effect_measure: risk_ratio
+    approved_time_window: { min_week: 44, max_week: 56 }
+    dose_policy: SEPARATE_BY_APPROVED_DOSE
+    biosimilar_policy: SEPARATE_NODES
+    # Unlike RA, concomitant immunomodulator use in UC maintenance is a known effect
+    # modifier rather than uniform background, so a combination arm must not silently pool
+    # with the monotherapy it would otherwise flatter.
+    combination_policy: OWN_NODE
+    missing_data_policy: NON_RESPONDER_IMPUTATION
+    zero_event_policy: TREATMENT_ARM_CONTINUITY_CORRECTION
+    model_selection_rule: NETMETA_IF_LOOPS_OR_MULTI_ARM_ELSE_BUCHER
+    heterogeneity_rule: RANDOM_EFFECTS_ALWAYS
+    inconsistency_rule: NET_SPLIT_IF_INDEPENDENT_LOOPS
+    placebo_response_policy: SENSITIVITY_REQUIRED
+    route_mixing_policy: DISCLOSE_AND_PROCEED
+    sensitivity_analysis_rules:
+      - Repeat restricted to subcutaneous comparators; report the divergence explicitly.
+      - Report observed placebo response per administration route alongside the estimate.
+    study_exclusion_criteria:
+      - Non-randomised or observational designs.
+      - Induction-phase results, which cannot be pooled with maintenance.
+      - Trials whose maintenance substudy cannot be separated from induction.
+    risk_of_bias_handling: SENSITIVITY_ANALYSIS_ONLY
+    min_studies: 3
+    min_nodes: 3

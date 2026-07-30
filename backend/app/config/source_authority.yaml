@@ -1,0 +1,297 @@
+# Source Authority taxonomy (FR-706a) — the SOURCE OF TRUTH for classifying a cited
+# domain. Content-agnostic infrastructure (SE-007): brand/competitor *ownership* is derived
+# dynamically from brands.yaml (see source_authority/taxonomy.py); this file holds the
+# TA-independent, third-party authority lists + a few explicit ownership domains that a
+# brand-name match can't infer (corporate/company sites).
+#
+# Two INDEPENDENT dimensions are modelled (see classifier.py):
+#   control_type   : who owns/controls the domain  (ABBVIE | COMPETITOR | INDEPENDENT | UNKNOWN)
+#   authority_type : the content/authority class    (REGULATORY | PEER_REVIEWED | ...)
+# The lists below drive authority_type via LONGEST-SUFFIX matching, so a specific
+# subdomain rule (ncbi.nlm.nih.gov) wins over a broad parent (nih.gov).
+#
+# Bump rules_version whenever the lists change materially — cached domain classifications
+# stamped with an older version can then be recognised as stale and reclassified.
+rules_version: 5
+
+# ---------------------------------------------------------------------------
+# authority_type lists (independent third parties). Entries are authority domains;
+# longest match wins. Keep entries lowercase, no scheme, no www.
+# ---------------------------------------------------------------------------
+regulatory:
+  - fda.gov
+  - ema.europa.eu
+  - ec.europa.eu
+  - who.int
+  - cdc.gov
+  - nih.gov            # broad; peer_reviewed subdomains below win via longest-suffix
+  - clinicaltrials.gov
+  - mhra.gov.uk
+  - tga.gov.au
+  - hc-sc.gc.ca
+  - pmda.go.jp
+  - health.gov
+  - hhs.gov
+  - accessdata.fda.gov
+  - dailymed.nlm.nih.gov
+  - nhs.uk
+  - bccancer.bc.ca
+  - hpra.ie             # Ireland
+  - bfarm.de            # Germany
+  - ansm.sante.fr       # France
+  - aemps.gob.es        # Spain
+  - aifa.gov.it         # Italy
+  - swissmedic.ch       # Switzerland
+  - mfds.go.kr          # South Korea
+  - anvisa.gov.br       # Brazil
+  - medsafe.govt.nz     # New Zealand
+
+# Clinical-practice guidelines + health-technology-assessment (HTA) bodies. Kept SEPARATE from
+# regulatory AGENCIES (FDA/EMA) because guideline/HTA output drives treatment decisions and is a
+# distinct authority class. Still a TRUSTED category (see classifier.py / service _TRUSTED_CATS).
+guideline:
+  - nccn.org
+  - esmo.org
+  - nice.org.uk         # UK HTA (moved from regulatory)
+  - cda-amc.ca          # Canada's Drug Agency / HTA (moved from regulatory)
+  - uspreventiveservicestaskforce.org
+  - sign.ac.uk
+
+peer_reviewed:
+  - ncbi.nlm.nih.gov
+  - pubmed.ncbi.nlm.nih.gov
+  - pmc.ncbi.nlm.nih.gov
+  - nejm.org
+  - jamanetwork.com
+  - thelancet.com
+  - bmj.com
+  - nature.com
+  - sciencedirect.com
+  - springer.com
+  - link.springer.com
+  - wiley.com
+  - onlinelibrary.wiley.com
+  - cochranelibrary.com
+  - cochrane.org
+  - cell.com
+  - ashpublications.org
+  - ahajournals.org
+  - academic.oup.com
+  - annals.org
+  - frontiersin.org
+  - plos.org
+  - journals.plos.org
+  - mdpi.com
+  - biomedcentral.com
+  - tandfonline.com
+  - karger.com
+  - asco.org
+  - ascopubs.org
+  - aacrjournals.org
+  - researchgate.net
+  - elsevierpure.com
+  - doi.org             # DOI resolver — captures the many DOI-based citations (e.g. OpenEvidence)
+  - europepmc.org
+  - medrxiv.org
+  - biorxiv.org
+  - haematologica.org
+  - jaad.org
+  - sagepub.com
+  - journals.sagepub.com
+  - dovepress.com
+  - jddonline.com        # Journal of Drugs in Dermatology
+  - emjreviews.com       # European Medical Journal
+  - ajmc.com             # American Journal of Managed Care
+
+medical_reference:
+  - mayoclinic.org
+  - clevelandclinic.org
+  - hopkinsmedicine.org
+  - medlineplus.gov
+  - uptodate.com
+  - medscape.com
+  - drugs.com
+  - rxlist.com
+  - merckmanuals.com
+  - msdmanuals.com
+  - cancer.org
+  - cancer.gov
+  - arthritis.org
+  - crohnscolitisfoundation.org
+  - psoriasis.org
+  - diabetes.org
+  - kidney.org
+  - heart.org
+  - aad.org             # American Academy of Dermatology
+  - rheumatology.org
+  - gastro.org
+  - hematology.org
+  - hopkinsarthritis.org
+  - hss.edu
+  - gi.org
+  - nras.org.uk
+  - choosept.com
+  - healthtree.org
+  - myra.org.au
+  - acog.org            # Women's Health
+  - asrm.org
+  - menopause.org
+  - resolve.org
+  - endocrine.org       # Endocrinology / CPP
+  - hormone.org
+  - pediatricendocrinesociety.org
+  - magicfoundation.org
+  - cancer.net
+  - lls.org             # Leukemia & Lymphoma Society
+  - versusarthritis.org
+  - cancerresearchuk.org
+  - macmillan.org.uk
+  - spondylitis.org             # patient advocacy / disease foundations
+  - cllsociety.org
+  - nationaleczema.org
+  - psoriasis-association.org.uk
+  - crohnsandcolitis.ca
+  - crohnsandcolitis.org.uk
+  - aafp.org                    # American Academy of Family Physicians
+  - chemoexperts.com
+  - mssm.edu                    # Icahn School of Medicine at Mount Sinai
+  - psychiatry.org              # American Psychiatric Association (Neuroscience)
+  - nami.org                    # National Alliance on Mental Illness
+  - dbsalliance.org             # Depression and Bipolar Support Alliance
+
+health_media:
+  - healthline.com
+  - webmd.com
+  - verywellhealth.com
+  - everydayhealth.com
+  - health.com
+  - self.com
+  - medicalnewstoday.com
+  - goodrx.com
+  - patient.info
+  - healthgrades.com
+  - health.harvard.edu
+  - prevention.com
+  - healio.com
+  - hcplive.com
+  - mdedge.com
+  - ascopost.com
+  - targetedonc.com
+  - pharmacytimes.com
+  - dermatologytimes.com
+  - practicalgastro.com
+  - 2minutemedicine.com
+  - conexiant.com
+  - healthcentral.com
+  - rheumatoidarthritis.net
+  - patientpower.info
+  - empoweredarthritis.com
+  - creakyjoints.org
+  - prnewswire.com
+  - statnews.com
+  - endpts.com
+  - medpagetoday.com
+  - fiercepharma.com
+  - fiercebiotech.com
+  - biopharmadive.com
+  - businesswire.com
+  - globenewswire.com
+  - onclive.com          # oncology / specialty trade media
+  - centerforbiosimilars.com
+  - managedhealthcareexecutive.com
+  - rheumnow.com
+  - rheum-live.com
+  - dermsquared.com
+  - axios.com
+
+social_ugc:
+  - reddit.com
+  - quora.com
+  - healthunlocked.com
+  - patientslikeme.com
+  - inspire.com
+  - facebook.com
+  - x.com
+  - twitter.com
+  - youtube.com
+  - tiktok.com
+  - wikipedia.org
+  - medium.com
+  - linkedin.com
+  - substack.com
+  - threads.net
+  - mumsnet.com
+  - bsky.app
+  - myrateam.com        # MyRATeam patient community
+
+# ---------------------------------------------------------------------------
+# Explicit ownership domains. AbbVie brand product sites are largely inferred from
+# brands.yaml (humira.com -> "humira" focus brand), but corporate/company domains that a
+# brand-name token can't catch are listed here. Extend as needed.
+# ---------------------------------------------------------------------------
+abbvie_domains:
+  - abbvie.com
+  - abbviemedinfo.com
+  - abbviescience.com
+  - rinvoq.com
+  - skyrizi.com
+  - humira.com
+  - imbruvica.com
+  - venclexta.com
+  - lupron.com
+  - orilissa.com
+  - qulipta.com
+  - vraylar.com
+  - botox.com
+  - venclextahcp.com
+  - rinvoqhcp.com
+  - rxabbvie.com
+  - allergan.com          # AbbVie acquired Allergan (2020)
+  - allerganaesthetics.com
+  - abbviecares.com
+  - skyrizihcp.com        # brand HCP / product-variant + country sites (base-brand suffix misses these)
+  - humirapro.com
+  - imbruvicahcp.com      # Imbruvica (AbbVie, co-marketed with J&J)
+  - luprongyn.com
+  - lupronped.com
+  - lupronpedpro.com
+  - lupronprostatecancer.com
+  - abbvie.ca             # AbbVie Canada
+  - abbviecare.ca
+
+# Competitor corporate/company domains (ownership the brand-name match won't infer from a
+# product-name token). Product sites (e.g. stelara.com) are inferred from brands.yaml.
+competitor_domains:
+  - jnj.com
+  - janssen.com
+  - novartis.com
+  - pfizer.com
+  - amgen.com
+  - sanofi.com
+  - regeneron.com
+  - lilly.com
+  - novonordisk.com
+  - astrazeneca.com
+  - bms.com
+  - roche.com
+  - gene.com            # Genentech
+  - gsk.com
+  - ucb.com
+  - beigene.com
+  - dupixenthcp.com
+  - organon.com         # Women's Health spin-off
+  - myovant.com         # relugolix (fibroids/endometriosis)
+  - takeda.com
+  - astellas.com
+  - merck.com
+  - msd.com
+  - gilead.com
+  - biogen.com
+  - daiichisankyo.com
+  - otsuka.com                  # Rexulti, Abilify (Neuroscience)
+  - otsuka-us.com
+  - lundbeck.com                # Rexulti co-marketer
+  - lundbeckus.com
+  - intracellulartherapies.com  # Caplyta (Intra-Cellular, acquired by J&J)
+  - sunovion.com                # Latuda (Sumitomo Pharma America)
+  - sumitomo-pharma.com

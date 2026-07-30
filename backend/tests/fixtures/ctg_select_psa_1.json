@@ -1,0 +1,204 @@
+{
+  "protocolSection": {
+    "identificationModule": {
+      "nctId": "NCT03104400",
+      "acronym": "SELECT-PsA 1",
+      "briefTitle": "A Study to Evaluate Upadacitinib in Adults With Psoriatic Arthritis",
+      "officialTitle": "A Phase 3, Randomized, Double-Blind Study Comparing Upadacitinib to Placebo and to Adalimumab in Subjects With Active Psoriatic Arthritis"
+    },
+    "statusModule": {
+      "overallStatus": "COMPLETED",
+      "startDateStruct": { "date": "2017-04-26" },
+      "completionDateStruct": { "date": "2021-01-13" },
+      "resultsFirstPostDateStruct": { "date": "2021-05-06" }
+    },
+    "sponsorCollaboratorsModule": {
+      "leadSponsor": { "name": "AbbVie" }
+    },
+    "conditionsModule": {
+      "conditions": ["Psoriatic Arthritis"]
+    },
+    "designModule": {
+      "phases": ["PHASE3"],
+      "enrollmentInfo": { "count": 1705 },
+      "designInfo": {
+        "allocation": "RANDOMIZED",
+        "primaryPurpose": "TREATMENT",
+        "maskingInfo": { "masking": "QUADRUPLE" }
+      }
+    },
+    "armsInterventionsModule": {
+      "armGroups": [
+        { "label": "Placebo", "type": "PLACEBO_COMPARATOR" },
+        { "label": "Upadacitinib 15 mg QD", "type": "EXPERIMENTAL" },
+        { "label": "Upadacitinib 30 mg QD", "type": "EXPERIMENTAL" },
+        { "label": "Adalimumab 40 mg EOW", "type": "ACTIVE_COMPARATOR" }
+      ]
+    }
+  },
+  "resultsSection": {
+    "participantFlowModule": {
+      "groups": [
+        { "id": "FG000", "title": "Placebo" },
+        { "id": "FG001", "title": "Upadacitinib 15 mg QD" },
+        { "id": "FG002", "title": "Upadacitinib 30 mg QD" },
+        { "id": "FG003", "title": "Adalimumab 40 mg EOW" }
+      ]
+    },
+    "outcomeMeasuresModule": {
+      "outcomeMeasures": [
+        {
+          "type": "PRIMARY",
+          "title": "Percentage of Participants Achieving ACR20 Response at Week 12",
+          "description": "ACR20 is defined as >=20% improvement in tender and swollen joint counts.",
+          "populationDescription": "All randomized participants who received at least one dose.",
+          "reportingStatus": "POSTED",
+          "paramType": "NUMBER",
+          "unitOfMeasure": "percentage of participants",
+          "timeFrame": "Week 12",
+          "denomUnitsSelected": "Participants",
+          "groups": [
+            { "id": "OG000", "title": "Placebo" },
+            { "id": "OG001", "title": "Upadacitinib 15 mg QD" },
+            { "id": "OG002", "title": "Upadacitinib 30 mg QD" },
+            { "id": "OG003", "title": "Adalimumab 40 mg EOW" }
+          ],
+          "denoms": [
+            {
+              "units": "Participants",
+              "counts": [
+                { "groupId": "OG000", "value": "423" },
+                { "groupId": "OG001", "value": "429" },
+                { "groupId": "OG002", "value": "423" },
+                { "groupId": "OG003", "value": "429" }
+              ]
+            }
+          ],
+          "classes": [
+            {
+              "categories": [
+                {
+                  "measurements": [
+                    { "groupId": "OG000", "value": "36.2" },
+                    { "groupId": "OG001", "value": "70.6" },
+                    { "groupId": "OG002", "value": "78.5" },
+                    { "groupId": "OG003", "value": "65.0" }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SECONDARY",
+          "title": "Change From Baseline in HAQ-DI at Week 12",
+          "description": "Health Assessment Questionnaire Disability Index.",
+          "reportingStatus": "POSTED",
+          "paramType": "LEAST_SQUARES_MEAN",
+          "dispersionType": "STANDARD_ERROR",
+          "unitOfMeasure": "score on a scale",
+          "timeFrame": "Baseline to Week 12",
+          "groups": [
+            { "id": "OG000", "title": "Placebo" },
+            { "id": "OG001", "title": "Upadacitinib 15 mg QD" }
+          ],
+          "denoms": [
+            {
+              "units": "Participants",
+              "counts": [
+                { "groupId": "OG000", "value": "423" },
+                { "groupId": "OG001", "value": "429" }
+              ]
+            }
+          ],
+          "classes": [
+            {
+              "categories": [
+                {
+                  "measurements": [
+                    { "groupId": "OG000", "value": "-0.14", "spread": "0.02" },
+                    { "groupId": "OG001", "value": "-0.42", "spread": "0.02" }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SECONDARY",
+          "title": "Percentage of Participants Achieving PASI90 Response at Week 16 by Baseline BSA",
+          "reportingStatus": "POSTED",
+          "paramType": "NUMBER",
+          "unitOfMeasure": "percentage of participants",
+          "timeFrame": "Week 16",
+          "groups": [
+            { "id": "OG000", "title": "Placebo" },
+            { "id": "OG001", "title": "Upadacitinib 15 mg QD" }
+          ],
+          "denoms": [
+            {
+              "units": "Participants",
+              "counts": [
+                { "groupId": "OG000", "value": "200" },
+                { "groupId": "OG001", "value": "204" }
+              ]
+            }
+          ],
+          "classes": [
+            {
+              "title": "BSA >= 3%",
+              "categories": [
+                {
+                  "title": "Responders",
+                  "measurements": [
+                    { "groupId": "OG000", "value": "21.3" },
+                    { "groupId": "OG001", "value": "62.7" }
+                  ]
+                }
+              ]
+            },
+            {
+              "title": "BSA < 3%",
+              "categories": [
+                {
+                  "title": "Responders",
+                  "measurements": [
+                    { "groupId": "OG000", "value": "18.0" },
+                    { "groupId": "OG001", "value": "58.1" }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SECONDARY",
+          "title": "Time to First Occurrence of Minimal Disease Activity",
+          "reportingStatus": "POSTED",
+          "paramType": "HAZARD_RATIO",
+          "unitOfMeasure": "ratio",
+          "timeFrame": "Up to Week 56",
+          "groups": [{ "id": "OG001", "title": "Upadacitinib 15 mg QD" }],
+          "classes": [
+            {
+              "categories": [
+                {
+                  "measurements": [{ "groupId": "OG001", "value": "2.31" }]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SECONDARY",
+          "title": "Percentage of Participants Achieving ACR50 Response at Week 12",
+          "reportingStatus": "NOT_POSTED",
+          "paramType": "NUMBER",
+          "unitOfMeasure": "percentage of participants",
+          "timeFrame": "Week 12",
+          "classes": []
+        }
+      ]
+    }
+  }
+}

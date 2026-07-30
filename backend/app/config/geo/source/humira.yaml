@@ -1,0 +1,66 @@
+# GEO curated source — Humira. Human/Medical-Affairs editable source of truth.
+# Regenerate JSON-LD + llms.txt with:  python -m scripts.generate_geo_schema
+# Curated values below OVERRIDE anything seeded from openFDA; leave a field blank/absent
+# to let the openFDA label seed it.
+brand: Humira
+generic: adalimumab
+# Flip to true once Medical Affairs signs off the efficacy + competitors values below.
+# While false, the UI shows a "placeholder" caveat and dataSource flags it as unverified.
+clinical_values_verified: false
+manufacturer: AbbVie Inc.
+# Every stored therapeutic_area key this brand is indicated under. A brand is not
+# single-area: Humira spans all three specialties, and naming one would misdescribe
+# the other two. Each entry MUST be a key of `therapeutic_areas:` in brands.yaml —
+# the generator fails on a typo rather than shipping an orphan label.
+therapeutic_areas: [Dermatology, Gastroenterology, Rheumatology]
+drug_class: TNF-alpha inhibitor
+administration_route: Subcutaneous injection
+dosage_form: Pre-filled syringe / Auto-injector pen
+active_ingredient: adalimumab
+prescribing_information: https://www.rxabbvie.com/pdf/humira.pdf
+aliases: []
+
+# How the openFDA seeder should look this drug up (blank -> uses brand/generic above).
+openfda:
+  brand_name: HUMIRA
+  generic_name: adalimumab
+
+strengths:
+  - {value: "40", unit: mg}
+  - {value: "80", unit: mg}
+
+indications:
+  - name: Rheumatoid Arthritis
+    description: Moderate-to-severe rheumatoid arthritis in adults who have had an inadequate response to DMARDs
+  - name: Crohn's Disease
+    description: Moderate-to-severe Crohn's disease in adults who have had an inadequate response to conventional therapy
+  - name: Ulcerative Colitis
+    description: Moderate-to-severe ulcerative colitis in adults
+  - name: Plaque Psoriasis
+    description: Moderate-to-severe chronic plaque psoriasis in adults who are candidates for systemic therapy
+  - name: Psoriatic Arthritis
+    description: Active psoriatic arthritis in adults
+  - name: Hidradenitis Suppurativa
+    description: Moderate-to-severe hidradenitis suppurativa in patients 12 years and older
+
+adverse_outcomes:
+  - {name: Serious infections, severity: Boxed Warning}
+  - {name: Malignancies including lymphoma, severity: Boxed Warning}
+  - {name: Injection site reactions, severity: Common}
+  - {name: Upper respiratory infections, severity: Common}
+  - {name: Hepatotoxicity, severity: Serious}
+
+efficacy:
+  rheumatoidArthritis: {measure: ACR20, value: "65%", timepoint: Week 24}
+  crohnsDisease: {measure: Clinical remission, value: "36%", timepoint: Week 26}
+  plaquePsoriasis: {measure: PASI 75, value: "71%", timepoint: Week 16}
+
+# `key_competitors` is DERIVED, not curated here. The generator reads the competitive
+# field per indication from the brands.yaml `indications:` overlay — the same accessor
+# scoring uses — so the two can never disagree about who competes with whom. A flat
+# hand-kept list served psoriasis comparators for a Crohn's question.
+competitors:
+  biosimilars_available: true
+
+# data_source: optional override. When absent the generator stamps a default that notes
+# curated + (if seeded) the openFDA SPL provenance.

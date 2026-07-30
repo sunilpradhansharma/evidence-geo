@@ -1,0 +1,54 @@
+# Per-1M-token pricing (USD) for cost estimation (NF-014). Bedrock us-east-2 list prices.
+# Keyed by substring match against model_id; first match wins.
+#
+# IMPORTANT: the match is a plain substring of the FULL model id, which for Bedrock
+# inference profiles carries a region prefix — e.g. "us.anthropic.claude-sonnet-4-5-
+# 20250929-v1:0". A rule written for an older naming scheme silently does NOT match and
+# the model falls through to `default` below, so the run's reported cost is wrong with no
+# error anywhere. Whenever a TARGET_*_MODEL_ID changes, add its rule here.
+pricing:
+  # Current prod default for the `claude` target and for orchestrator + scoring. Without
+  # this rule it matched nothing and was billed at the $1/$3 default — a 5x under-report
+  # of output cost on the single most expensive model in the run.
+  - match: "anthropic.claude-sonnet-4-5"
+    input_per_million: 3.00
+    output_per_million: 15.00
+  - match: "anthropic.claude-3-5-sonnet"
+    input_per_million: 3.00
+    output_per_million: 15.00
+  - match: "anthropic.claude-3-5-haiku"
+    input_per_million: 0.80
+    output_per_million: 4.00
+  - match: "amazon.nova-pro"
+    input_per_million: 0.80
+    output_per_million: 3.20
+  - match: "meta.llama3"
+    input_per_million: 0.72
+    output_per_million: 0.72
+  - match: "gemini-1.5-pro"
+    input_per_million: 1.25
+    output_per_million: 5.00
+  - match: "gemini-2.5-flash"
+    input_per_million: 0.15
+    output_per_million: 0.60
+  - match: "gemini"
+    input_per_million: 0.15
+    output_per_million: 0.60
+  # OpenAI list prices. gpt-4o-mini must precede gpt-4o (substring match, first wins).
+  # NB: token cost only — the hosted web_search tool is billed per call separately.
+  - match: "gpt-4o-mini"
+    input_per_million: 0.15
+    output_per_million: 0.60
+  - match: "gpt-4o"
+    input_per_million: 2.50
+    output_per_million: 10.00
+
+# Anything unmatched lands here. Two prod targets currently DO fall through and are
+# therefore estimated, not priced — fill in real rules above when the list prices are
+# confirmed rather than leaving the guess in place:
+#   * us.amazon.nova-2-lite-v1:0  (the "amazon.nova-pro" rule does not match "nova-2-lite";
+#     a Lite tier is far cheaper than this default, so its cost is OVER-reported)
+#   * evidencemd-pro              (third-party clinical API, not on a public token tariff)
+default:
+  input_per_million: 1.00
+  output_per_million: 3.00

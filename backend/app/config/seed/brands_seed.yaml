@@ -1,0 +1,745 @@
+# Brand & competitor context — kept exclusively in config (SE-007: code is content-agnostic).
+# Used to inject context into the scoring prompt.
+#
+# Two top-level blocks, and they answer different questions:
+#
+#   therapeutic_areas:  the STORED grouping. `therapeutic_area` values on questions and
+#                       responses are keys of this block, so it is never restructured —
+#                       doing so would orphan historical rows.
+#   indications:        an ADDITIVE disease overlay (see the bottom of this file). It is
+#                       what makes a Rinvoq Atopic Dermatitis question resolve to AD
+#                       competitors instead of the whole Dermatology block. Zero migration:
+#                       nothing reads it unless it asks for a disease.
+#
+# Three curated annotations appear on drug entries, all hand-authored and bounded to the
+# ~20-30 agents that matter for the Rinvoq/Skyrizi evidence programme:
+#
+#   drug_class / administration_route
+#       Reviewed config, not inferred. Open-set class inference (RxNorm/ATC/ChEMBL) is
+#       deliberately out of scope — a curated table is a reviewable artefact, an inferred
+#       label is an unreviewed assertion. `administration_route` feeds the route-mixing
+#       transitivity check when oral small molecules share a network with injectables.
+#   evidence_depth  (default "standard")
+#       `full` means "ingest trials, build networks, compute comparisons for this drug".
+#       It is read ONLY by the evidence layer. It does NOT change monitoring identity:
+#       a competitor at full depth stays a competitor to scoring and alerting, so the
+#       COMPETITOR_ADVANTAGE signal is preserved. Promoting such a drug into
+#       focus_brands would silently suppress that alert (alert_engine skips the focus
+#       brand) — which is why depth and side are separate fields.
+#       Always an explicit opt-in, focus brands included: defaulting focus brands to
+#       full would enrol Lupron, Vraylar and the GLP-1 set in the evidence programme by
+#       accident. Currently full: Rinvoq, Skyrizi, Humira, Tremfya.
+#   background_therapy  (default false, `drug_catalog:` only)
+#       "This agent may be NAMED in a generated head-to-head question without changing
+#       which comparison that question asks." A curated question may otherwise name only
+#       the two agents of its own cell, because a third drug makes it a different
+#       comparison from the one that was requested — see `curation/generator.py`.
+#       An explicit opt-in, and deliberately NOT inferred from which block a drug sits
+#       in: `drug_catalog:` holds genuine commercial rivals (Taltz, Bimzelx, Entyvio)
+#       beside annotation-only agents, so "catalog means harmless" would quietly let a
+#       real competitor into a question. It is also NOT the same claim as "not a
+#       competitor": an investigational or unbranded biosimilar agent is not a rival
+#       either, but naming one in a patient-facing question is worse, not better, so
+#       those stay policed. Currently true for: Methotrexate.
+
+therapeutic_areas:
+  # Dermatology and Gastroenterology replaced the single "Immunology" key. One flat
+  # immunology block put Plaque Psoriasis next to Ulcerative Colitis, so a brand-less
+  # skin question fell back to a competitor list containing Entyvio. Specialty is the
+  # unit clinicians, congresses and Medical Affairs teams actually work in, so it is
+  # the unit the stored `therapeutic_area` key uses.
+  #
+  # Humira, Skyrizi and Rinvoq now appear in THREE blocks (Dermatology,
+  # Gastroenterology, Rheumatology). Each copy repeats `aliases`, `drug_class`,
+  # `administration_route` and `evidence_depth` verbatim — `drug_index()` and
+  # `alias_index()` take whichever block they read FIRST, so an omission here would
+  # make the resolved drug facts depend on YAML ordering. Only `indications:` differs
+  # per block, because that is the one field that is genuinely area-specific.
+  Dermatology:
+    area: Dermatology
+    focus_brands:
+      - name: Skyrizi
+        generic: risankizumab
+        company: AbbVie
+        evidence_depth: full
+        drug_class: IL-23 inhibitor
+        administration_route: SC
+        aliases: [RZB]
+        indications: [Plaque Psoriasis]
+      - name: Humira
+        generic: adalimumab
+        company: AbbVie
+        evidence_depth: full
+        drug_class: TNF inhibitor
+        administration_route: SC
+        # ADA is adalimumab in an ARM TITLE. Note for reviewers: in an *outcome* title the
+        # same three letters usually mean anti-drug antibodies. Aliases are only ever
+        # applied to treatment labels, so the collision is out of scope here.
+        aliases: [ADA]
+        indications: [Plaque Psoriasis, Hidradenitis Suppurativa]
+      - name: Rinvoq
+        generic: upadacitinib
+        company: AbbVie
+        evidence_depth: full
+        drug_class: JAK inhibitor
+        administration_route: ORAL
+        aliases: [UPA]
+        indications: [Atopic Dermatitis]
+    competitors:
+      - name: Stelara
+        generic: ustekinumab
+        company: Johnson & Johnson
+        drug_class: IL-12/23 inhibitor
+        administration_route: SC
+      - name: Dupixent
+        generic: dupilumab
+        company: Sanofi/Regeneron
+        drug_class: IL-4/13 inhibitor
+        administration_route: SC
+      # Carried at FULL evidence depth: a third evidence programme in its own right
+      # (VOYAGE, DISCOVER, QUASAR, GALAXI/GRAVITI) across four indications. Still a
+      # competitor everywhere else — see the header note.
+      - name: Tremfya
+        generic: guselkumab
+        company: Johnson & Johnson
+        evidence_depth: full
+        drug_class: IL-23 inhibitor
+        administration_route: SC
+        aliases: [GUS]
+        indications: [Plaque Psoriasis]
+      - name: Cosentyx
+        generic: secukinumab
+        company: Novartis
+        drug_class: IL-17 inhibitor
+        administration_route: SC
+        aliases: [SEC]
+      - name: Enbrel
+        generic: etanercept
+        company: Amgen
+        drug_class: TNF inhibitor
+        administration_route: SC
+      - name: Otezla
+        generic: apremilast
+        company: Amgen
+        drug_class: PDE4 inhibitor
+        administration_route: ORAL
+
+  Gastroenterology:
+    area: Gastroenterology
+    focus_brands:
+      - name: Skyrizi
+        generic: risankizumab
+        company: AbbVie
+        evidence_depth: full
+        drug_class: IL-23 inhibitor
+        administration_route: SC
+        aliases: [RZB]
+        indications: [Crohn's Disease, Ulcerative Colitis]
+      - name: Rinvoq
+        generic: upadacitinib
+        company: AbbVie
+        evidence_depth: full
+        drug_class: JAK inhibitor
+        administration_route: ORAL
+        aliases: [UPA]
+        indications: [Ulcerative Colitis, Crohn's Disease]
+      - name: Humira
+        generic: adalimumab
+        company: AbbVie
+        evidence_depth: full
+        drug_class: TNF inhibitor
+        administration_route: SC
+        aliases: [ADA]
+        indications: [Crohn's Disease, Ulcerative Colitis]
+    competitors:
+      - name: Tremfya
+        generic: guselkumab
+        company: Johnson & Johnson
+        evidence_depth: full
+        drug_class: IL-23 inhibitor
+        administration_route: SC
+        aliases: [GUS]
+        indications: [Ulcerative Colitis, Crohn's Disease]
+      - name: Stelara
+        generic: ustekinumab
+        company: Johnson & Johnson
+        drug_class: IL-12/23 inhibitor
+        administration_route: SC
+      # Entyvio and Omvoh are the GI-specific field the old flat Immunology block never
+      # carried at area level — a brand-less Crohn's question previously fell back to a
+      # competitor list of psoriasis biologics. Both induce intravenously and maintain
+      # subcutaneously; the MAINTENANCE route is recorded, matching `drug_catalog:`.
+      - name: Entyvio
+        generic: vedolizumab
+        company: Takeda
+        drug_class: Integrin inhibitor
+        administration_route: SC
+      - name: Omvoh
+        generic: mirikizumab
+        company: Eli Lilly
+        drug_class: IL-23 inhibitor
+        administration_route: SC
+
+  Oncology:
+    area: Oncology
+    focus_brands:
+      - name: Imbruvica
+        generic: ibrutinib
+        company: AbbVie
+        indications: [Chronic Lymphocytic Leukemia, Mantle Cell Lymphoma, Waldenstrom's Macroglobulinemia]
+      - name: Venclexta
+        generic: venetoclax
+        company: AbbVie
+        indications: [Chronic Lymphocytic Leukemia, Acute Myeloid Leukemia]
+    competitors:
+      - name: Calquence
+        generic: acalabrutinib
+        company: AstraZeneca
+      - name: Brukinsa
+        generic: zanubrutinib
+        company: BeiGene
+      - name: Gazyva
+        generic: obinutuzumab
+        company: Roche
+      - name: Revlimid
+        generic: lenalidomide
+        company: Bristol Myers Squibb
+
+  Central Precocious Puberty:
+    area: Endocrinology
+    focus_brands:
+      - name: Lupron Depot-Ped
+        generic: leuprolide acetate
+        company: AbbVie
+        indications: [Central Precocious Puberty]
+    competitors:
+      - name: Supprelin LA
+        generic: histrelin acetate
+        company: Endo Pharmaceuticals
+      - name: Fensolvi
+        generic: leuprolide acetate
+        company: Tolmar
+      - name: Triptodur
+        generic: triptorelin
+        company: Arbor Pharmaceuticals
+
+  Endometriosis:
+    area: "Women's Health"
+    focus_brands:
+      - name: Lupron Depot
+        generic: leuprolide acetate
+        company: AbbVie
+        indications: [Endometriosis]
+    competitors:
+      - name: Orilissa
+        generic: elagolix
+        company: AbbVie
+      - name: Myfembree
+        generic: relugolix/estradiol/norethindrone
+        company: Pfizer/Myovant
+      - name: Zoladex
+        generic: goserelin
+        company: AstraZeneca
+      - name: Synarel
+        generic: nafarelin
+        company: Pfizer
+
+  Uterine Fibroids:
+    area: "Women's Health"
+    focus_brands:
+      - name: Lupron Depot
+        generic: leuprolide acetate
+        company: AbbVie
+        indications: [Uterine Fibroids]
+    competitors:
+      - name: Oriahnn
+        generic: elagolix/estradiol/norethindrone
+        company: AbbVie
+      - name: Myfembree
+        generic: relugolix/estradiol/norethindrone
+        company: Pfizer/Myovant
+      - name: Zoladex
+        generic: goserelin
+        company: AstraZeneca
+
+  Rheumatology:
+    area: Rheumatology
+    focus_brands:
+      # Aliases are repeated on both copies of these two drugs on purpose. The index takes
+      # whichever block it reads first, so omitting them here would make the resolved node
+      # depend on YAML ordering — the exact class of disagreement flagged above.
+      - name: Rinvoq
+        generic: upadacitinib
+        company: AbbVie
+        evidence_depth: full
+        drug_class: JAK inhibitor
+        administration_route: ORAL
+        aliases: [UPA]
+        indications: [Rheumatoid Arthritis, Psoriatic Arthritis, Ankylosing Spondylitis, Non-radiographic Axial Spondyloarthritis]
+      - name: Humira
+        generic: adalimumab
+        company: AbbVie
+        evidence_depth: full
+        drug_class: TNF inhibitor
+        administration_route: SC
+        aliases: [ADA]
+        indications: [Rheumatoid Arthritis, Psoriatic Arthritis, Ankylosing Spondylitis, Juvenile Idiopathic Arthritis]
+    competitors:
+      - name: Enbrel
+        generic: etanercept
+        company: Amgen
+        drug_class: TNF inhibitor
+        administration_route: SC
+      - name: Xeljanz
+        generic: tofacitinib
+        company: Pfizer
+        drug_class: JAK inhibitor
+        administration_route: ORAL
+        aliases: [TOF]
+      - name: Cimzia
+        generic: certolizumab pegol
+        company: UCB
+        drug_class: TNF inhibitor
+        administration_route: SC
+      - name: Simponi
+        generic: golimumab
+        company: Johnson & Johnson
+        drug_class: TNF inhibitor
+        administration_route: SC
+      - name: Orencia
+        generic: abatacept
+        company: Bristol Myers Squibb
+        drug_class: T-cell costimulation modulator
+        administration_route: SC
+        aliases: [ABA]
+      - name: Actemra
+        generic: tocilizumab
+        company: Genentech/Roche
+        drug_class: IL-6 inhibitor
+        administration_route: SC
+      - name: Olumiant
+        generic: baricitinib
+        company: Eli Lilly
+        drug_class: JAK inhibitor
+        administration_route: ORAL
+        aliases: [BAR]
+      - name: Cosentyx
+        generic: secukinumab
+        company: Novartis
+        drug_class: IL-17 inhibitor
+        administration_route: SC
+        aliases: [SEC]
+
+  Neuroscience:
+    area: Neuroscience
+    focus_brands:
+      - name: Vraylar
+        generic: cariprazine
+        company: AbbVie
+        indications: [Schizophrenia, Bipolar I Disorder, Major Depressive Disorder]
+    competitors:
+      - name: Rexulti
+        generic: brexpiprazole
+        company: Otsuka/Lundbeck
+      - name: Caplyta
+        generic: lumateperone
+        company: Johnson & Johnson
+      - name: Abilify
+        generic: aripiprazole
+        company: Otsuka
+      - name: Latuda
+        generic: lurasidone
+        company: Sumitomo Pharma
+      - name: Seroquel
+        generic: quetiapine
+        company: AstraZeneca
+      - name: Zyprexa
+        generic: olanzapine
+        company: Eli Lilly
+
+  # Competitive / category monitoring: AbbVie has no marketed obesity asset yet, so the
+  # marketed GLP-1 / weight-management leaders are tracked as the monitored ("focus")
+  # brands and the older orals as competitors. `company` makes the non-AbbVie ownership
+  # explicit. Used by the Social Listening surface and (for VOC questions) Discovery.
+  Obesity:
+    area: Obesity
+    focus_brands:
+      - name: Wegovy
+        generic: semaglutide
+        company: Novo Nordisk
+        indications: [Obesity / Weight Management]
+      - name: Zepbound
+        generic: tirzepatide
+        company: Eli Lilly
+        indications: [Obesity / Weight Management]
+      - name: Ozempic
+        generic: semaglutide
+        company: Novo Nordisk
+        indications: [Type 2 Diabetes, Obesity / Weight Management]
+      - name: Mounjaro
+        generic: tirzepatide
+        company: Eli Lilly
+        indications: [Type 2 Diabetes, Obesity / Weight Management]
+      - name: Saxenda
+        generic: liraglutide
+        company: Novo Nordisk
+        indications: [Obesity / Weight Management]
+      - name: Rybelsus
+        generic: semaglutide
+        company: Novo Nordisk
+        indications: [Type 2 Diabetes]
+    competitors:
+      - name: Contrave
+        generic: naltrexone/bupropion
+        company: Currax
+      - name: Qsymia
+        generic: phentermine/topiramate
+        company: Vivus
+      - name: Xenical
+        generic: orlistat
+        company: Roche/CHEPLAPHARM
+      - name: alli
+        generic: orlistat
+        company: GSK
+
+# =====================================================================================
+# DISEASE OVERLAY  (additive — nothing above changes, no migration)
+# =====================================================================================
+# Why this exists: a focus brand does NOT map to exactly one therapeutic area. Rinvoq
+# spans Rheumatology (RA, PsA, AS, nr-axSpA) and Immunology (AD, UC, CD); Humira spans
+# both too. Reading competitors at therapeutic-area-block level therefore scored a
+# Rinvoq Atopic Dermatitis question against Xeljanz and Olumiant while omitting Cibinqo,
+# Adbry and Ebglyss. The disease is the correct unit of competitive comparison.
+#
+# Field contract per entry:
+#   area                   parent therapeutic area (display rollup)
+#   therapeutic_area_key   the STORED `therapeutic_area` value a question in this
+#                          disease should carry. Must be a key of `therapeutic_areas:`.
+#   brands                 monitored/focus brands approved or in play for this disease
+#   competitors            the disease-specific competitive field. NOT the union of the
+#                          parent area's competitors — that flattening is the bug.
+#   canonical_outcomes     REFERENCES into canonical_outcomes.yaml. Never defines an
+#                          endpoint. An ID that does not exist there is a startup error.
+#   aliases                extra free-text spellings used only to detect the disease in
+#                          a query. Kept out of `therapeutic_areas:` so alias_index()
+#                          (which Prompt Volume reads) keeps its exact current output.
+#
+# Coverage is the 9 indications of the Rinvoq/Skyrizi evidence programme, in the four
+# delivery tiers ordered by endpoint cleanliness (Hidradenitis Suppurativa joined with the
+# Dermatology split and sits outside those tiers), plus 10 further indications covering
+# every remaining AbbVie focus brand.
+#
+# Those 10 are MONITORING scope, not evidence-programme scope. They exist so the
+# comparison-coverage matrix and disease-level scoring work for Imbruvica, Venclexta,
+# Vraylar and Lupron; they are NOT enrolled in trial ingestion, because that is gated on
+# `evidence_depth: full`, which remains Rinvoq, Skyrizi, Humira and Tremfya only.
+
+indications:
+  # --- Tier 1 -----------------------------------------------------------------------
+  Plaque Psoriasis:
+    area: Dermatology
+    therapeutic_area_key: Dermatology
+    aliases: [PsO, psoriasis, plaque psoriasis, chronic plaque psoriasis]
+    brands: [Skyrizi, Humira]
+    competitors: [Tremfya, Stelara, Cosentyx, Taltz, Bimzelx, Sotyktu, Otezla, Enbrel]
+    canonical_outcomes: [PSO_PASI75_W16, PSO_PASI90_W16, PSO_PASI100_W16]
+
+  Rheumatoid Arthritis:
+    area: Rheumatology
+    therapeutic_area_key: Rheumatology
+    aliases: [RA, rheumatoid arthritis]
+    brands: [Rinvoq, Humira]
+    competitors: [Xeljanz, Olumiant, Enbrel, Orencia, Actemra, Cimzia, Simponi, Rituxan]
+    canonical_outcomes: [RA_ACR20_W12, RA_ACR50_W12, RA_ACR70_W12]
+
+  # --- Tier 2 -----------------------------------------------------------------------
+  # The only network shared by both focus brands, and the sharpest test of the fix.
+  Psoriatic Arthritis:
+    area: Rheumatology
+    therapeutic_area_key: Rheumatology
+    aliases: [PsA, psoriatic arthritis]
+    brands: [Rinvoq, Skyrizi, Humira]
+    competitors: [Tremfya, Cosentyx, Taltz, Stelara, Otezla, Enbrel, Simponi, Bimzelx]
+    canonical_outcomes: [PSA_ACR20_W16, PSA_ACR50_W16, PSA_PASI90_W16]
+
+  Atopic Dermatitis:
+    area: Dermatology
+    therapeutic_area_key: Dermatology
+    aliases: [atopic dermatitis, atopic eczema]
+    brands: [Rinvoq]
+    competitors: [Dupixent, Cibinqo, Adbry, Ebglyss, Nemluvio, Opzelura]
+    canonical_outcomes: [AD_EASI75_W16, AD_EASI90_W16, AD_IGA01_W16]
+
+  # --- Tier 3 -----------------------------------------------------------------------
+  # Induction and maintenance are separate canonical outcomes; `dose_policy` is decisive
+  # here because both focus brands use different induction and maintenance dosing.
+  Ulcerative Colitis:
+    area: Gastroenterology
+    therapeutic_area_key: Gastroenterology
+    aliases: [UC, ulcerative colitis]
+    brands: [Rinvoq, Skyrizi, Humira]
+    competitors: [Tremfya, Stelara, Entyvio, Zeposia, Omvoh, Velsipity, Xeljanz]
+    canonical_outcomes:
+      [UC_REMISSION_INDUCTION_W8, UC_ENDOSCOPIC_IMPROVEMENT_INDUCTION_W8, UC_REMISSION_MAINTENANCE_W52]
+
+  Crohn's Disease:
+    area: Gastroenterology
+    therapeutic_area_key: Gastroenterology
+    aliases: [CD, Crohn's disease, Crohns disease, Crohn disease]
+    brands: [Skyrizi, Rinvoq, Humira]
+    competitors: [Tremfya, Stelara, Entyvio, Omvoh]
+    canonical_outcomes:
+      [CD_REMISSION_INDUCTION_W12, CD_ENDOSCOPIC_RESPONSE_INDUCTION_W12, CD_REMISSION_MAINTENANCE_W52]
+
+  # --- Tier 4 -----------------------------------------------------------------------
+  # Sparse networks and lower arm-level availability — expect structured evidence gaps.
+  Ankylosing Spondylitis:
+    area: Rheumatology
+    therapeutic_area_key: Rheumatology
+    aliases: [ankylosing spondylitis, radiographic axial spondyloarthritis]
+    brands: [Rinvoq, Humira]
+    competitors: [Cosentyx, Taltz, Enbrel, Simponi, Cimzia, Bimzelx]
+    canonical_outcomes: [AS_ASAS40_W14]
+
+  Non-radiographic Axial Spondyloarthritis:
+    area: Rheumatology
+    therapeutic_area_key: Rheumatology
+    aliases: [nr-axSpA, nraxspa, non-radiographic axial spondyloarthritis, axSpA]
+    brands: [Rinvoq]
+    competitors: [Cosentyx, Taltz, Cimzia, Bimzelx]
+    canonical_outcomes: [NRAXSPA_ASAS40_W14]
+
+  # --- Dermatology, beyond the original Rinvoq/Skyrizi programme --------------------
+  # Humira only: Skyrizi is NOT approved in HS, so listing it here would assert an
+  # indication AbbVie does not hold. Cosentyx (2023) and Bimzelx (2024) are the two
+  # approved biologic comparators; both are already curated in `drug_catalog:`.
+  # HiSCR50 at week 12 is the field's standard primary endpoint (PIONEER I/II).
+  Hidradenitis Suppurativa:
+    area: Dermatology
+    therapeutic_area_key: Dermatology
+    aliases: [HS, hidradenitis suppurativa, acne inversa]
+    brands: [Humira]
+    competitors: [Cosentyx, Bimzelx]
+    canonical_outcomes: [HS_HISCR50_W12]
+
+  # --- Beyond the immunology programme ----------------------------------------------
+  # REQUIRES MEDICAL SIGN-OFF, like the endpoints they reference.
+  #
+  # Why these exist: the comparison-coverage matrix (`curation/coverage.py`) is built from
+  # THIS block, not from `therapeutic_areas:`. It skips any disease with no declared
+  # competitive field, so before these entries Imbruvica, Venclexta, Vraylar, Lupron Depot
+  # and Lupron Depot-Ped produced exactly ZERO monitorable comparisons while still being
+  # offered in the UI's brand picker — a filter that silently reported "no gaps".
+  #
+  # Each field is curated PER DISEASE, not inherited from the parent area. The Oncology
+  # block carries one flat list across four diseases and the Neuroscience block one flat
+  # list across three; inheriting either would reproduce the exact flattening this overlay
+  # was built to fix. Where an agent is dropped from an area list, the reason is stated —
+  # a silent omission is indistinguishable from an oversight.
+
+  # --- Oncology: Imbruvica, Venclexta -----------------------------------------------
+  Chronic Lymphocytic Leukemia:
+    area: Oncology
+    therapeutic_area_key: Oncology
+    # SLL is included: iwCLL treats CLL and small lymphocytic lymphoma as one disease with
+    # two presentations, and the trials enrol them together.
+    aliases: [CLL, chronic lymphocytic leukemia, chronic lymphocytic leukaemia, SLL, small lymphocytic lymphoma]
+    brands: [Imbruvica, Venclexta]
+    # Revlimid is dropped from the area list: it is not a standard-of-care CLL comparator.
+    competitors: [Calquence, Brukinsa, Gazyva, Rituxan]
+    canonical_outcomes: [CLL_ORR_W48]
+
+  Mantle Cell Lymphoma:
+    area: Oncology
+    therapeutic_area_key: Oncology
+    aliases: [MCL, mantle cell lymphoma]
+    brands: [Imbruvica]
+    # Gazyva is dropped: its role is in CLL and follicular lymphoma, not MCL.
+    competitors: [Calquence, Brukinsa, Revlimid, Rituxan]
+    canonical_outcomes: [MCL_ORR_W24]
+
+  Waldenstrom's Macroglobulinemia:
+    area: Oncology
+    therapeutic_area_key: Oncology
+    aliases: [WM, Waldenstrom's Macroglobulinemia, Waldenstrom macroglobulinemia,
+              Waldenstroms macroglobulinemia, Waldenstrom macroglobulinaemia,
+              lymphoplasmacytic lymphoma]
+    brands: [Imbruvica]
+    # Calquence is DROPPED here although it is a BTK inhibitor like Imbruvica and Brukinsa:
+    # it holds no Waldenstrom indication. Same class is not the same competitive field.
+    competitors: [Brukinsa, Rituxan]
+    canonical_outcomes: [WM_MAJOR_RESPONSE_W48]
+
+  Acute Myeloid Leukemia:
+    area: Oncology
+    therapeutic_area_key: Oncology
+    aliases: [AML, acute myeloid leukemia, acute myeloid leukaemia,
+              acute myelogenous leukemia]
+    brands: [Venclexta]
+    # None of the area-level competitors appears here — see the `drug_catalog:` note. All
+    # four of these are new curated entries.
+    competitors: [Vidaza, Tibsovo, Rydapt, Onureg]
+    canonical_outcomes: [AML_CR_CRI_W24]
+
+  # --- Neuroscience: Vraylar --------------------------------------------------------
+  Schizophrenia:
+    area: Neuroscience
+    therapeutic_area_key: Neuroscience
+    aliases: [schizophrenia]
+    brands: [Vraylar]
+    # The one indication where the whole area list genuinely applies: all six are approved
+    # in schizophrenia. Stated explicitly so it reads as a decision, not a copy-paste.
+    competitors: [Rexulti, Caplyta, Abilify, Latuda, Seroquel, Zyprexa]
+    canonical_outcomes: [SCZ_PANSS_RESPONSE_W6]
+
+  Bipolar I Disorder:
+    area: Neuroscience
+    therapeutic_area_key: Neuroscience
+    # No bare "bipolar depression" alias, and deliberately no bare "depression" anywhere in
+    # this file — `resolve_disease` takes the LONGEST matching alias, so "depression" would
+    # outrank "bipolar" and route every bipolar-depression question to MDD.
+    aliases: [bipolar, bipolar I, bipolar 1, bipolar disorder, bipolar I disorder,
+              bipolar 1 disorder, manic episode]
+    brands: [Vraylar]
+    # Rexulti is DROPPED: approved in schizophrenia, adjunctive MDD and Alzheimer's
+    # agitation, but it holds no bipolar I indication.
+    competitors: [Caplyta, Latuda, Seroquel, Zyprexa, Abilify]
+    canonical_outcomes: [BPI_YMRS_RESPONSE_W3]
+
+  Major Depressive Disorder:
+    area: Neuroscience
+    therapeutic_area_key: Neuroscience
+    aliases: [MDD, major depressive disorder, major depression]
+    brands: [Vraylar]
+    # ADJUNCTIVE MDD only, which is the setting Vraylar is approved in. Latuda and Zyprexa
+    # are dropped (bipolar depression and the olanzapine/fluoxetine combination are
+    # different indications). Seroquel is dropped as the ARGUABLE case — quetiapine XR does
+    # carry an adjunctive MDD indication — and is flagged here rather than quietly
+    # included, because including it widens every generated MDD comparison.
+    competitors: [Rexulti, Abilify, Caplyta]
+    canonical_outcomes: [MDD_MADRS_RESPONSE_W6]
+
+  # --- Women's Health: Lupron Depot -------------------------------------------------
+  # These two already store one disease per therapeutic_area key, so the area-level lists
+  # are per-disease to begin with; the overlay restates them so the matrix can read them.
+  Endometriosis:
+    area: "Women's Health"
+    therapeutic_area_key: Endometriosis
+    aliases: [endometriosis]
+    brands: [Lupron Depot]
+    competitors: [Orilissa, Myfembree, Zoladex, Synarel]
+    canonical_outcomes: [ENDO_DYSMENORRHEA_RESPONSE_W12]
+
+  Uterine Fibroids:
+    area: "Women's Health"
+    therapeutic_area_key: Uterine Fibroids
+    aliases: [uterine fibroids, fibroids, uterine leiomyoma, uterine leiomyomata]
+    brands: [Lupron Depot]
+    competitors: [Oriahnn, Myfembree, Zoladex]
+    canonical_outcomes: [UF_MBL_RESPONSE_W24]
+
+  # --- Endocrinology: Lupron Depot-Ped ----------------------------------------------
+  Central Precocious Puberty:
+    area: Endocrinology
+    therapeutic_area_key: Central Precocious Puberty
+    aliases: [CPP, central precocious puberty, precocious puberty]
+    brands: [Lupron Depot-Ped]
+    competitors: [Supprelin LA, Fensolvi, Triptodur]
+    canonical_outcomes: [CPP_LH_SUPPRESSION_W24]
+
+# =====================================================================================
+# CURATED DRUG CATALOG  (class + route for agents with no `therapeutic_areas:` entry)
+# =====================================================================================
+# Hand-authored and deliberately bounded to the Tier 1-3 comparator set. Together with
+# the annotations already on the Dermatology, Gastroenterology and Rheumatology entries
+# above this covers ~27 agents. It is reviewed like any other config; nothing is inferred.
+#
+# `administration_route` is the load-bearing field: mixing an oral small molecule with
+# injectable biologics in one network is a transitivity threat, and the route label is
+# what lets the resolver detect and disclose it. Where a drug has different induction
+# and maintenance routes the MAINTENANCE route is recorded and the divergence noted,
+# because induction and maintenance are separate networks anyway.
+
+drug_catalog:
+  Taltz:        { generic: ixekizumab,        company: Eli Lilly,          drug_class: IL-17 inhibitor,        administration_route: SC, aliases: [IXE] }
+  Bimzelx:      { generic: bimekizumab,       company: UCB,                drug_class: IL-17A/F inhibitor,     administration_route: SC, aliases: [BKZ] }
+  Sotyktu:      { generic: deucravacitinib,   company: Bristol Myers Squibb, drug_class: TYK2 inhibitor,       administration_route: ORAL }
+  Cibinqo:      { generic: abrocitinib,       company: Pfizer,             drug_class: JAK inhibitor,          administration_route: ORAL }
+  Adbry:        { generic: tralokinumab,      company: LEO Pharma,         drug_class: IL-13 inhibitor,        administration_route: SC }
+  Ebglyss:      { generic: lebrikizumab,      company: Eli Lilly,          drug_class: IL-13 inhibitor,        administration_route: SC }
+  Nemluvio:     { generic: nemolizumab,       company: Galderma,           drug_class: IL-31 receptor inhibitor, administration_route: SC }
+  Opzelura:     { generic: ruxolitinib cream, company: Incyte,             drug_class: JAK inhibitor,          administration_route: TOPICAL }
+  # Entyvio and Omvoh induce intravenously and maintain subcutaneously; the maintenance
+  # route is recorded because induction and maintenance are never pooled.
+  Entyvio:      { generic: vedolizumab,       company: Takeda,             drug_class: Integrin inhibitor,     administration_route: SC }
+  Omvoh:        { generic: mirikizumab,       company: Eli Lilly,          drug_class: IL-23 inhibitor,        administration_route: SC }
+  Zeposia:      { generic: ozanimod,          company: Bristol Myers Squibb, drug_class: S1P receptor modulator, administration_route: ORAL }
+  Velsipity:    { generic: etrasimod,         company: Pfizer,             drug_class: S1P receptor modulator, administration_route: ORAL }
+  Rituxan:      { generic: rituximab,         company: Genentech/Roche,    drug_class: Anti-CD20,              administration_route: IV }
+
+  # An adalimumab biosimilar, keyed by the development code because that is what the
+  # registry wrote (seen as an arm label in NCT04018599). No brand name is asserted here:
+  # the code is what the trial used, and inventing the marketed-brand mapping would be an
+  # unreviewed claim on top of a reviewable one.
+  #
+  # `biosimilar_of` is RECORDED, NOT ACTED ON. It keeps its own node by default. Whether a
+  # biosimilar may share the originator's node is a clinical equivalence claim, and that
+  # belongs to `biosimilar_policy` in an approved protocol — the same separation that keeps
+  # dose pooling in `dose_policy` rather than in the label normaliser.
+  MSB11022:     { generic: null,             company: Fresenius Kabi,     drug_class: TNF inhibitor,          administration_route: SC, biosimilar_of: Humira }
+
+  # Investigational, so keyed by the molecule: there is no brand to key it under yet. It is
+  # here for the class and route rather than for competitive tracking — an IL-17A/F Nanobody
+  # given SC is exactly the kind of agent the route-mixing check needs annotated before it
+  # can tell whether a network pools an oral with an injectable.
+  Sonelokimab: { generic: sonelokimab,      company: MoonLake,           drug_class: IL-17A/F inhibitor,     administration_route: SC }
+
+  # AbbVie's own discontinued Phase 2 dual-variable-domain immunoglobulin, keyed by its
+  # development code because it never received an INN or a brand. Seen as an arm label in
+  # NCT02349451, which compared it against adalimumab in PsA — so it enters the network as a
+  # real molecule attached to the Humira node, not as noise to be filtered.
+  #
+  # It is curated for its CLASS AND ROUTE, not for competitive tracking. `drug_catalog:`
+  # entries are assigned `is_competitor: True` by `drug_index()`, which is wrong in spirit
+  # for an AbbVie asset but has no effect: competitive alerting reads `is_competitor` from
+  # the scorer's own `brand_mentions` output, and `alias_index()` is built from
+  # `therapeutic_areas:` only. Nothing here reaches the alert engine.
+  #
+  # The class is deliberately written as its own string rather than folded into "TNF
+  # inhibitor". It inhibits TNF AND IL-17A, so filing it under either single class would
+  # assert a class equivalence to agents that hit one target, which is exactly the
+  # assumption the class-level screen exists to prevent.
+  ABT-122:      { generic: null,             company: AbbVie,             drug_class: TNF/IL-17A inhibitor,   administration_route: SC }
+
+  # Conventional synthetic DMARD. Not a brand and not a comparator we track commercially,
+  # but it is the background and active-control arm in most PsA and RA trials, so leaving
+  # it uncurated turns "MTX" into a junk node in networks it legitimately belongs to.
+  #
+  # `background_therapy` is set for exactly that reason. Methotrexate is the backbone of
+  # the regimens these questions are asked about — Rinvoq's own RA indication is written
+  # as "inadequate response to methotrexate" — so "after methotrexate stopped working, is
+  # Rinvoq or Cosentyx the better next step?" is one comparison with its clinical context
+  # attached, not a three-way. Without the flag the curation generator discarded such
+  # candidates as out-of-scope and the cell stayed an unfilled gap.
+  Methotrexate: { generic: methotrexate,      company: (generic),          drug_class: csDMARD,                administration_route: ORAL, aliases: [MTX], background_therapy: true }
+
+  # --- Acute Myeloid Leukemia comparators (Venclexta's competitive field) -------------
+  # AML is the one new indication whose comparators appear nowhere in `therapeutic_areas:`
+  # — the Oncology block carries a CLL/lymphoma field (Calquence, Brukinsa, Gazyva,
+  # Revlimid), none of which is an AML agent. Reusing it would have generated cells like
+  # "Venclexta vs Brukinsa for AML", a BTK inhibitor in a disease it is not used in.
+  #
+  # Azacitidine is BOTH Venclexta's combination partner and the control arm it was
+  # registered against (VIALE-A: azacitidine + venetoclax vs azacitidine + placebo), so it
+  # is a legitimate comparator rather than an add-on to be filtered — the same distinction
+  # already recorded for Tremfya. It is NOT marked `background_therapy`: unlike
+  # methotrexate it is the thing being compared, not the backbone a comparison happens on.
+  #
+  # Vidaza and Onureg are the same molecule by different routes and are deliberately
+  # separate entries: the injectable induction agent and the oral maintenance agent are
+  # not interchangeable, and `administration_route` is what lets the route-mixing check
+  # see the difference.
+  Vidaza:       { generic: azacitidine,        company: Bristol Myers Squibb, drug_class: Hypomethylating agent, administration_route: SC, aliases: [AZA] }
+  Onureg:       { generic: oral azacitidine,   company: Bristol Myers Squibb, drug_class: Hypomethylating agent, administration_route: ORAL }
+  Tibsovo:      { generic: ivosidenib,         company: Servier,            drug_class: IDH1 inhibitor,         administration_route: ORAL }
+  Rydapt:       { generic: midostaurin,        company: Novartis,           drug_class: FLT3 inhibitor,         administration_route: ORAL }

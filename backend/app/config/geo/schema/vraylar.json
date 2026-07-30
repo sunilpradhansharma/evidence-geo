@@ -1,0 +1,201 @@
+{
+  "@context": "https://schema.org",
+  "@type": "Drug",
+  "name": "Vraylar",
+  "nonProprietaryName": "cariprazine",
+  "manufacturer": {
+    "@type": "Organization",
+    "name": "AbbVie Inc."
+  },
+  "drugClass": "Atypical antipsychotic (dopamine D3/D2 receptor partial agonist)",
+  "administrationRoute": "Oral",
+  "dosageForm": "Capsule",
+  "activeIngredient": "cariprazine",
+  "availableStrength": [
+    {
+      "@type": "DrugStrength",
+      "activeIngredient": "cariprazine",
+      "strengthValue": "1.5",
+      "strengthUnit": "mg"
+    },
+    {
+      "@type": "DrugStrength",
+      "activeIngredient": "cariprazine",
+      "strengthValue": "3",
+      "strengthUnit": "mg"
+    },
+    {
+      "@type": "DrugStrength",
+      "activeIngredient": "cariprazine",
+      "strengthValue": "4.5",
+      "strengthUnit": "mg"
+    },
+    {
+      "@type": "DrugStrength",
+      "activeIngredient": "cariprazine",
+      "strengthValue": "6",
+      "strengthUnit": "mg"
+    }
+  ],
+  "indication": [
+    {
+      "@type": "MedicalIndication",
+      "name": "Schizophrenia",
+      "description": "Treatment of schizophrenia in adults"
+    },
+    {
+      "@type": "MedicalIndication",
+      "name": "Bipolar I Disorder",
+      "description": "Acute treatment of manic or mixed episodes, and depressive episodes (bipolar depression), associated with bipolar I disorder in adults"
+    },
+    {
+      "@type": "MedicalIndication",
+      "name": "Major Depressive Disorder",
+      "description": "Adjunctive treatment of major depressive disorder in adults"
+    }
+  ],
+  "adverseOutcome": [
+    {
+      "@type": "MedicalCondition",
+      "name": "Increased mortality in elderly patients with dementia-related psychosis",
+      "severity": "Boxed Warning"
+    },
+    {
+      "@type": "MedicalCondition",
+      "name": "Suicidal thoughts and behaviors (antidepressant class)",
+      "severity": "Boxed Warning"
+    },
+    {
+      "@type": "MedicalCondition",
+      "name": "Akathisia",
+      "severity": "Common"
+    },
+    {
+      "@type": "MedicalCondition",
+      "name": "Extrapyramidal symptoms",
+      "severity": "Common"
+    },
+    {
+      "@type": "MedicalCondition",
+      "name": "Tardive dyskinesia",
+      "severity": "Serious"
+    },
+    {
+      "@type": "MedicalCondition",
+      "name": "Neuroleptic malignant syndrome",
+      "severity": "Serious"
+    },
+    {
+      "@type": "MedicalCondition",
+      "name": "Metabolic changes (hyperglycemia",
+      "severity": "Serious"
+    }
+  ],
+  "clinicalEfficacy": {
+    "schizophrenia": {
+      "measure": "PANSS total change from baseline",
+      "value": "Superior to placebo",
+      "timepoint": "Week 6"
+    },
+    "bipolarMania": {
+      "measure": "YMRS change from baseline",
+      "value": "Superior to placebo",
+      "timepoint": "Week 3"
+    },
+    "bipolarDepression": {
+      "measure": "MADRS change from baseline",
+      "value": "Superior to placebo",
+      "timepoint": "Week 6"
+    }
+  },
+  "competitorContext": {
+    "therapeuticAreas": [
+      "Neuroscience"
+    ],
+    "biosimilarsAvailable": false,
+    "keyCompetitors": [
+      "Rexulti",
+      "Caplyta",
+      "Abilify",
+      "Latuda",
+      "Seroquel",
+      "Zyprexa"
+    ],
+    "competitorsByIndication": {
+      "Schizophrenia": [
+        "Rexulti",
+        "Caplyta",
+        "Abilify",
+        "Latuda",
+        "Seroquel",
+        "Zyprexa"
+      ],
+      "Bipolar I Disorder": [
+        "Caplyta",
+        "Latuda",
+        "Seroquel",
+        "Zyprexa",
+        "Abilify"
+      ],
+      "Major Depressive Disorder": [
+        "Rexulti",
+        "Abilify",
+        "Caplyta"
+      ]
+    }
+  },
+  "prescribingInformation": "https://www.rxabbvie.com/pdf/vraylar_pi.pdf",
+  "labelReference": {
+    "boxedWarning": "WARNING: INCREASED MORTALITY IN ELDERLY PATIENTS WITH DEMENTIA-RELATED PSYCHOSIS and SUICIDAL THOUGHTS AND BEHAVIORS Increased Mortality in Elderly Patients with Dementia-Related Psychosis Elderly patients with dementia-related psychosis treated with antipsychotic drugs are at an increased risk of death. VRAYLAR is not approved for the treatment of patients with dementia-related psychosis [see Warnings and Precautions ( 5.1 )]. Suicidal Thoughts and Behaviors Antidepressants increased the risk of suicidal thoughts and behaviors in pediatric and young adult patients in short-term studies. Closely monitor all antidepressant-treated patients for clinical worsening, and for the emergence of suicidal thoughts and behaviors [see Warnings and Precautions ( 5.2 )] . WARNING : INCREASED MORTALITY IN ELDERLY PATIENTS WITH DEMENTIA-RELATED PSYCHOSIS and SUICIDAL THOUGHTS AND BEHAVIORS See full prescribing information for complete boxed warning. Elderly patients with dementia-related psychosis treated with antipsychotic drugs are at an increased risk of death. VRAYLAR is not approved for the treatment of patients with dementia-related psychosis. ( 5.1 ) Antidepressants increased the risk of suicidal thoughts and behaviors in pediatric and young adult patients. Closely monitor all antidepressant-treated patients for clinical worsening and emergence of suicidal thoughts and behaviors. ( 5.2 )",
+    "indicationsAndUsage": "1 . INDICATIONS AND USAGE VRAYLAR ® is indicated for: • Treatment of schizophrenia in adult and pediatric patients 13 years of age and older [see Clinical Studies ( 14.1 )] • Acute treatment of manic or mixed episodes associated with bipolar I disorder in adult and pediatric patients 10 years of age and older [see Clinical Studies ( 14.2 )] • Treatment of depressive episodes associated with bipolar I disorder (bipolar depression) in adult patients [see Clinical Studies ( 14.3 )] • Adjunctive therapy to antidepressants for the treatment of major depressive disorder (MDD) in adult patients [see Clinical Studies ( 14.4 )] VRAYLAR is an atypical antipsychotic indicated for: Treatment of schizophrenia in adults and pediatric patients 13 years of age and older ( 1 ) Acute treatment of manic or mixed episodes associated with bipolar I disorder in adults and pediatric patients 10 years of age and older ( 1 ) Treatment of depressive episodes associated with bipolar I disorder (bipolar depression) in adults ( 1 ) Adjunctive therapy to antidepressants for the treatment of major depressive disorder (MDD) in adults ( 1 )",
+    "adverseReactions": "6 ADVERSE REACTIONS The following adverse reactions are discussed in more detail in other sections of the labeling: Increased Mortality in Elderly Patients with Dementia-Related Psychosis [see Boxed Warning and Warnings and Precautions ( 5.1 )] Suicidal Thoughts and Behaviors [see Boxed Warning and Warnings and Precautions ( 5.2 )] Cerebrovascular Adverse Reactions, Including Stroke, in Elderly Patients with Dementia-Related Psychosis [see Warnings and Precautions ( 5.3 )] Neuroleptic Malignant Syndrome [see Warnings and Precautions ( 5.4 )] Tardive Dyskinesia [see Warnings and Precautions ( 5.5 )] Late Occurring Adverse Reactions [see Warnings and Precautions ( 5.6 )] Metabolic Changes [see Warnings and Precautions ( 5.7 )] Leukopenia, Neutropenia, and Agranulocytosis [see Warnings and Precautions ( 5.8 )] Orthostatic Hypotension and Syncope [see Warnings and Precautions ( 5.9 )] Falls [see Warnings and Precautions ( 5.10 )] Seizures [ see Warnings and Precautions ( 5.11 )] Potential for Cognitive and Motor Impairment [see Warnings and Precautions ( 5.12 )] Body Temperature Dysregulation [see Warnings and Precautions ( 5.13 )] Dysphagia [see Warnings and Precautions ( 5.14 )] Most common adverse reactions in adults (incidence ≥ 5% and at least twice the rate of placebo) were ( 6.1 ) : Schizophrenia: extrapyramidal symptoms and akathisia Bipolar mania: extrapyramidal symptoms, akathisia, dyspepsia, vomiting, somnolence, and restlessness Bipolar depression: nausea, akathisia, restlessness, and extrapyramidal symptoms Adjunctive treatment of MDD: akathisia, restlessness, fatigue, constipation, nausea, insomnia, increased appetite, dizziness, and extrapyramidal symptoms To report SUSPECTED ADVERSE REACTIONS, contact AbbVie at 1-800-633-9110 or FDA at 1-800-FDA-1088 or www.fda.gov/medwatch. 6.1 Clinical Trials Experience Because clinical trials are conducted under widely varying conditions, adverse reaction rates observed in the clinical trials of a drug cannot be directly compared to rates in the clinical trials of another drug and may not reflect the rates observed in practice. The information below is derived from an integrated clinical study database for VRAYLAR consisting of 6,722 adult patients exposed to one or more doses of VRAYLAR for the treatment of schizophrenia, manic or mixed episodes associated with bipolar I disorder, bipolar depression, and adjunctive treatment of major depressive disorder in placebo-controlled studies. This experience corresponds with a total experience of 1,182.8 patient-years. A total of 4,329 VRAYLAR-treated patients had at least 6 weeks and 296 VRAYLAR-treated patients had at least 48 weeks of exposure. Adult Patients with Schizophrenia The following findings are based on four placebo-controlled, 6-week schizophrenia trials with VRAYLAR doses ranging from 1.5 to 12 mg once daily. The maximum recommended dosage is 6 mg daily. Adverse Reactions Associated with Discontinuation of Treatment : There was no single adverse reaction leading to discontinuation that occurred at a rate of ≥ 2% in VRAYLAR-treated patients and at least twice the rate of placebo. Common Adverse Reactions (≥ 5% and at least twice the rate of placebo) : extrapyramidal symptoms and akathisia. Adverse Reactions with an incidence of ≥ 2% and greater than placebo, at any dose are shown in Table 8. Table 8. Adverse Reactions Occurring in ≥ 2% of VRAYLAR-treated Patients and > Placebo-treated Adult Patients in 6-Week Schizophrenia Trials VRAYLAR * System Organ Class / Preferred Term Placebo (N= 584) (%) 1.5 to 3 mg/day (N=539) (%) 4.5 to 6 mg/day (N=575) (%) 9 to 12 mg/day ⸰ (N=203) (%) Cardiac Disorder s Tachycardia a 1 2 2 3 Gastrointestinal Disorders Abdominal pain b 5 3 4 7 Constipation 5 6 7 10 Diarrhea c 3 1 4 5 Dry Mouth 2 1 2 3 Dyspepsia 4 4 5 5 Nausea 5 5 7 8 Toothache 4 3 3 6 Vomiting 3 4 5 5 General Disorders/Administration Site Conditions Fatigue d 1 1 3 2 Infections and Infestations Nasopharyngitis 1 1 1 2 Urinary tra …",
+    "dosageAndAdministration": "2 . DOSAGE AND ADMINISTRATION Administer VRAYLAR orally once daily with or without food ( 2 ) Starting Dose Recommended Dose Schizophrenia in Adults ( 2.2 ) 1.5 mg daily 1.5 mg to 6 mg daily Schizophrenia in Pediatric Patients (13-17 years) ( 2.2 ) 0.5 mg daily 1.5 mg to 4.5 mg daily Bipolar Mania in Adults ( 2.3 ) 1.5 mg daily 3 mg to 6 mg daily Bipolar Mania in Pediatric Patients (10-17 years) ( 2.3 ) 0.5 mg daily 3 mg or 4.5 mg daily Bipolar Depression in Adults ( 2.4 ) 1.5 mg daily 1.5 mg or 3 mg daily Adjunctive therapy to antidepressants for MDD in Adults ( 2.5 ) 1.5 mg daily 1.5 mg or 3 mg daily Adults with Schizophrenia and Bipolar Mania: Maximum recommended daily dosage is 6 mg. Dosages above 6 mg daily do not confer significant benefit, but increase the risk of dose-related adverse reactions ( 2.2 , 2.3 ) Pediatric patients with Schizophrenia and Bipolar Mania: Maximum recommended daily dosage is 4.5 mg. Adults with Bipolar Depression: Maximum recommended daily dosage is 3 mg ( 2.4 ) Adjunctive therapy for treatment of MDD in Adults: Maximum recommended daily dosage is 3 mg ( 2.5 ) 2.1 General Dosing Information VRAYLAR is given orally once daily and can be taken with or without food. Because of the long half-life of cariprazine and its active metabolites, changes in dose will not be fully reflected in plasma for several weeks. Prescribers should monitor patients for adverse reactions and treatment response for several weeks after starting VRAYLAR and after each dosage change [see Warnings and Precautions ( 5.6 ) , Clinical Pharmacology ( 12.3 )] . 2.2 Recommended Dosage in Schizophrenia Adult Patients The starting dosage of VRAYLAR is 1.5 mg orally once daily. The recommended dosage range is 1.5 mg to 6 mg orally once daily. The dosage can be increased to 3 mg on Day 2. Depending upon clinical response and tolerability, further dose adjustments can be made in 1.5 mg or 3 mg increments. The maximum recommended dosage is 6 mg orally once daily. In short-term controlled trials, dosages above 6 mg daily do not confer increased effectiveness sufficient to outweigh dose-related adverse reactions [see Adverse Reactions ( 6.1 ), Clinical Studies ( 14.1 )] . Pediatric Patients (13 to 17 years of age) The starting dosage of VRAYLAR is 0.5 mg orally once daily. The recommended dosage range is 1.5 mg to 4.5 mg orally once daily. Increase the dosage to 1.5 mg orally once daily on Day 3. Depending upon clinical response and tolerability, the dosage may be increased to 3 mg orally once daily starting on Day 5, and to 4.5 mg orally once daily starting on Day 8. The maximum recommended dosage is 4.5 mg orally once daily. 2.3 Recommended Dosage in Manic or M ixed E pisodes Associated with Bipolar I Disorder Adult Patients The starting dosage of VRAYLAR is 1.5 mg orally once daily. Increase the dosage to 3 mg orally once daily on Day 2. The recommended dosage range is 3 mg to 6 mg orally once daily. Depending upon clinical response and tolerability, further dose adjustments can be made in 1.5 mg or 3 mg increments. The maximum recommended dosage is 6 mg orally once daily. In short-term controlled trials, dosages above 6 mg daily do not confer increased effectiveness sufficient to outweigh dose-related adverse reactions [ see Adverse Reactions ( 6.1 ), Clinical Studies ( 14.2 ) ] . Pediatric Patients (10 to 17 years of age)​ The starting dosage of VRAYLAR is 0.5 mg orally once daily. The recommended dosage is 3 mg or 4.5 mg orally once daily. Increase the dosage to 1.5 mg orally once daily on Day 3 and to 3 mg orally once daily on Day 5. Depending upon clinical response and tolerability, the dosage may be increased to 4.5 mg orally once daily starting on Day 8. The maximum recommended dosage is 4.5 mg orally once daily. 2.4 Recommended Dosage in Depressive Episodes Associated with Bipolar I Disorder (Bipolar Depression) in Adult Patients The starting dosage of VRAYLAR is 1.5 mg orally once daily. Depending upon clinical response and to …"
+  },
+  "dataSource": "Curated (POC placeholder; clinical values pending Medical-Affairs verification); label fields seeded from openFDA (open.fda.gov)",
+  "lastUpdated": "2026-07-27",
+  "provenance": {
+    "generator": "scripts.generate_geo_schema",
+    "generatedAt": "2026-07-27",
+    "therapeuticAreas": [
+      "Neuroscience"
+    ],
+    "clinicalValuesVerified": false,
+    "curatedFields": [
+      "active_ingredient",
+      "administration_route",
+      "adverse_outcomes",
+      "brand",
+      "competitors",
+      "dosage_form",
+      "drug_class",
+      "efficacy",
+      "generic",
+      "indications",
+      "manufacturer",
+      "prescribing_information",
+      "strengths",
+      "therapeutic_areas"
+    ],
+    "appliedFromLabel": [],
+    "labelProvided": [
+      "manufacturer",
+      "administration_route",
+      "drug_class",
+      "active_ingredient",
+      "boxed_warning",
+      "indications_text",
+      "adverse_reactions_text",
+      "dosage_text",
+      "prescribing_information"
+    ],
+    "labelReferenceIncluded": [
+      "adverseReactions",
+      "boxedWarning",
+      "dosageAndAdministration",
+      "indicationsAndUsage"
+    ],
+    "labelSource": "openFDA/DailyMed SPL 4b5f7c65-aa2d-452a-b3db-bc85c06ff12f",
+    "labelEffectiveTime": "2025-12-18",
+    "note": "Curated YAML overrides openFDA-seeded fields. Replace placeholder clinical values with Medical-Affairs-approved data."
+  }
+}

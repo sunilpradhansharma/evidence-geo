@@ -1,0 +1,120 @@
+# LLM target registry — provider-agnostic by contract, Bedrock by configuration.
+# Adding a new target requires only a config entry + (if new provider) an adapter module.
+
+targets:
+  # Claude — the monitored target. Defaults to AWS Bedrock (parametric, NO citations).
+  # Set ANTHROPIC_API_KEY in .env to auto-switch this target to the direct Anthropic API
+  # (api.anthropic.com) with the native web_search tool -> real source citations like
+  # gemini/gpt-4o. The swap (provider + model_id + grounding) happens in registry.load_targets
+  # based on key presence, so no edit is needed here. Orchestrator + scoring stay on Bedrock.
+  - name: claude
+    role: TARGET
+    provider: bedrock
+    model_id: ${TARGET_CLAUDE_MODEL_ID}
+    params:
+      max_tokens: 8000
+      temperature: 0.3
+    rate_limit:
+      rpm: 20
+      tpm: 80000
+    enabled: true
+
+  - name: nova-pro
+    role: TARGET
+    provider: bedrock
+    model_id: ${TARGET_NOVA_MODEL_ID}
+    params:
+      max_tokens: 8000
+      temperature: 0.3
+    rate_limit:
+      rpm: 30
+      tpm: 100000
+    enabled: true
+
+  - name: llama
+    role: TARGET
+    provider: bedrock
+    model_id: ${TARGET_LLAMA_MODEL_ID}
+    params:
+      max_tokens: 8000
+      temperature: 0.3
+    rate_limit:
+      rpm: 30
+      tpm: 100000
+    enabled: true
+
+  # OpenAI via the Responses API. Web-search grounding returns real source URLs per
+  # response (same provenance pipeline as Gemini). Needs OPENAI_API_KEY in .env.
+  - name: gpt-4o
+    role: TARGET
+    provider: openai
+    model_id: ${TARGET_OPENAI_MODEL_ID}
+    params:
+      max_tokens: 8000
+      temperature: 0.3
+      grounding: true   # OpenAI hosted web search → real source URLs + cited claims
+      force_search: true   # require a web search on every call → always returns sources (no parametric-only answers)
+    rate_limit:
+      rpm: 30
+      tpm: 100000
+    enabled: true
+
+  # Google Gemini via the Gemini Developer API (GOOGLE_API_KEY) or Vertex AI fallback.
+  # max_tokens is high because gemini-2.5-pro is a thinking model that spends output
+  # tokens on internal reasoning before answering (~1800 thinking tokens observed).
+  - name: gemini
+    role: TARGET
+    provider: google
+    model_id: ${TARGET_GEMINI_MODEL_ID}
+    params:
+      max_tokens: 8000
+      temperature: 0.3
+      grounding: true   # Google Search grounding → returns real source URLs per response
+    rate_limit:
+      rpm: 30
+      tpm: 100000
+    enabled: true
+
+  # EvidenceMD — OpenAI-COMPATIBLE clinical-reasoning API (evidencemd.ai). SEPARATE from
+  # the manual OpenEvidence tool below. Routed to the Provider persona only (see
+  # target_routing.yaml) since it is a clinical-audience model.
+  # `enabled` is gated at load time on EVIDENCEMD_API_KEY (registry.load_targets): with no
+  # key the target is skipped so runs never fail on a missing credential.
+  - name: evidencemd
+    role: TARGET
+    provider: evidencemd
+    model_id: ${TARGET_EVIDENCEMD_MODEL_ID}
+    params:
+      max_tokens: 8000
+      temperature: 0.3
+    rate_limit:
+      rpm: 20
+      tpm: 80000
+    enabled: true
+
+  # OpenEvidence — Provider-persona only, captured MANUALLY via the capture bridge
+  # (API: /openevidence/*, UI: "OpenEvidence" tab). It has no public/automatable API,
+  # so keep this enabled: false — the orchestrator must NOT dispatch to the stub
+  # provider client. Pasted answers are ingested out-of-band and then scored + folded
+  # into Chairman consensus exactly like any other target.
+  - name: open-evidence
+    role: TARGET
+    provider: open-evidence
+    model_id: open-evidence-v1
+    params:
+      max_tokens: 2048
+      temperature: 0.0
+    enabled: false
+
+orchestrator:
+  provider: bedrock
+  model_id: ${ORCHESTRATOR_MODEL_ID}
+  params:
+    max_tokens: 8000
+
+scoring:
+  provider: bedrock
+  model_id: ${SCORING_MODEL_ID}
+  params:
+    max_tokens: 8000
+    temperature: 0.0

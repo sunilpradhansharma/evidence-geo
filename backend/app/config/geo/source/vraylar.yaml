@@ -1,0 +1,52 @@
+# GEO curated source — Vraylar. See humira.yaml for the format contract.
+# Regenerate JSON-LD + llms.txt with:  python -m scripts.generate_geo_schema
+brand: Vraylar
+generic: cariprazine
+# Flip to true once Medical Affairs signs off the efficacy + competitors values below.
+clinical_values_verified: false
+manufacturer: AbbVie Inc.
+therapeutic_areas: [Neuroscience]
+drug_class: Atypical antipsychotic (dopamine D3/D2 receptor partial agonist)
+administration_route: Oral
+dosage_form: Capsule
+active_ingredient: cariprazine
+prescribing_information: https://www.rxabbvie.com/pdf/vraylar_pi.pdf
+aliases: []
+
+openfda:
+  brand_name: VRAYLAR
+  generic_name: cariprazine
+
+strengths:
+  - {value: "1.5", unit: mg}
+  - {value: "3", unit: mg}
+  - {value: "4.5", unit: mg}
+  - {value: "6", unit: mg}
+
+indications:
+  - name: Schizophrenia
+    description: Treatment of schizophrenia in adults
+  - name: Bipolar I Disorder
+    description: Acute treatment of manic or mixed episodes, and depressive episodes (bipolar depression), associated with bipolar I disorder in adults
+  - name: Major Depressive Disorder
+    description: Adjunctive treatment of major depressive disorder in adults
+
+adverse_outcomes:
+  - {name: Increased mortality in elderly patients with dementia-related psychosis, severity: Boxed Warning}
+  - {name: Suicidal thoughts and behaviors (antidepressant class), severity: Boxed Warning}
+  - {name: Akathisia, severity: Common}
+  - {name: Extrapyramidal symptoms, severity: Common}
+  - {name: Tardive dyskinesia, severity: Serious}
+  - {name: Neuroleptic malignant syndrome, severity: Serious}
+  - {name: Metabolic changes (hyperglycemia, dyslipidemia, weight gain), severity: Serious}
+
+# Qualitative pending Medical Affairs verification (clinical_values_verified: false).
+efficacy:
+  schizophrenia: {measure: PANSS total change from baseline, value: "Superior to placebo", timepoint: Week 6}
+  bipolarMania: {measure: YMRS change from baseline, value: "Superior to placebo", timepoint: Week 3}
+  bipolarDepression: {measure: MADRS change from baseline, value: "Superior to placebo", timepoint: Week 6}
+
+# Curated rather than derived — see imbruvica.yaml.
+competitors:
+  biosimilars_available: false
+  key_competitors: [Rexulti, Caplyta, Abilify, Latuda, Seroquel, Zyprexa]

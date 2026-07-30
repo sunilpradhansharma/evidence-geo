@@ -1,0 +1,58 @@
+# GEO curated source — Venclexta. See humira.yaml for the format contract.
+brand: Venclexta
+generic: venetoclax
+# Flip to true once Medical Affairs signs off the efficacy + competitors values below.
+clinical_values_verified: false
+manufacturer: AbbVie Inc. / Genentech
+therapeutic_areas: [Oncology]
+drug_class: BCL-2 inhibitor
+administration_route: Oral
+dosage_form: Tablet
+active_ingredient: venetoclax
+prescribing_information: https://www.venclexta.com/prescribing-information
+aliases: []
+
+openfda:
+  brand_name: VENCLEXTA
+  generic_name: venetoclax
+
+strengths:
+  - {value: "10", unit: mg}
+  - {value: "50", unit: mg}
+  - {value: "100", unit: mg}
+
+indications:
+  - name: Chronic Lymphocytic Leukemia
+    description: CLL/SLL in adults, as monotherapy or in combination with obinutuzumab or rituximab
+  - name: Acute Myeloid Leukemia
+    description: Newly diagnosed AML in adults 75+ or with comorbidities, in combination with azacitidine, decitabine, or low-dose cytarabine
+
+adverse_outcomes:
+  - {name: Tumor lysis syndrome (TLS), severity: Boxed Warning}
+  - {name: Neutropenia, severity: Serious, incidence: "40%"}
+  - {name: Diarrhea, severity: Common}
+  - {name: Nausea, severity: Common}
+  - {name: Infections, severity: Serious}
+  - {name: Anemia, severity: Common}
+
+efficacy:
+  CLL_frontline: {measure: uMRD (with obinutuzumab), value: "76%", timepoint: End of treatment}
+  CLL_relapsed: {measure: PFS (with rituximab), value: "84.9%", timepoint: 24 months}
+  AML: {measure: CR/CRi (with azacitidine), value: "37%", timepoint: Best response}
+
+# Curated rather than derived — see imbruvica.yaml.
+competitors:
+  biosimilars_available: false
+  key_competitors: [Imbruvica (ibrutinib), Calquence (acalabrutinib), Brukinsa (zanubrutinib)]
+  differentiators: Only BCL-2 inhibitor; fixed-duration therapy option; deep MRD responses
+
+extra:
+  dosingProtocol:
+    rampUp:
+      week1: 20mg daily
+      week2: 50mg daily
+      week3: 100mg daily
+      week4: 200mg daily
+      week5: 400mg daily (target dose)
+    TLS_prophylaxis: Hydration + uric acid lowering agents required during ramp-up
+    fixedDuration: 12 months with obinutuzumab (24 months with rituximab)

@@ -1,0 +1,333 @@
+# Social Listening sources (Apify) — content-agnostic config (SE-007).
+#
+# Each channel maps to a pre-built Apify Actor + an input template. In the template,
+# the string "{term}" is substituted with a seed term/hashtag and the exact string
+# "{cap}" is replaced with that channel's results_cap (as an integer). Per-channel
+# `enabled` defaults true; the MASTER on/off switch is settings.apify_enabled
+# (env APIFY_ENABLED, default ON). Live fetch also requires APIFY_API_TOKEN.
+#
+# Each channel also has an optional `comments` block: a SEPARATE comments-scraper actor
+# that captures the replies on a captured post. There, "{post_url}" is substituted with the
+# parent post's URL and "{cap}" with max_comments_per_post. Comments are PII-scrubbed,
+# injection-screened, AE-flagged, and sentiment-scored just like posts, but are stored as a
+# SEPARATE dimension (see social.max_posts_with_comments_per_channel to bound cost).
+#
+# NOTE: confirm exact actor IDs, input schemas, and pricing on the Apify Store before
+# live runs. The field-mapper in app/harvest/sources/apify.py is deliberately tolerant
+# of field-name variants, so minor schema differences are handled gracefully.
+
+apify:
+  reddit:
+    enabled: true
+    actor_id: trudax/reddit-scraper-lite
+    results_cap: 30
+    input_template:
+      searches: ["{term}"]
+      type: posts
+      sort: new
+      maxItems: "{cap}"
+      maxPostCount: "{cap}"
+      skipComments: true
+      proxy:
+        useApifyProxy: true
+    comments:
+      enabled: true
+      actor_id: trudax/reddit-scraper-lite
+      max_comments_per_post: 20
+      input_template:
+        startUrls:
+          - url: "{post_url}"
+        maxComments: "{cap}"
+        maxItems: "{cap}"
+        skipComments: false
+        skipUserPosts: true
+        skipCommunity: true
+        proxy:
+          useApifyProxy: true
+
+  tiktok:
+    enabled: true
+    actor_id: clockworks/tiktok-scraper
+    results_cap: 30
+    input_template:
+      hashtags: ["{term}"]
+      resultsPerPage: "{cap}"
+      shouldDownloadVideos: false
+      shouldDownloadCovers: false
+      shouldDownloadSubtitles: false
+    comments:
+      enabled: true
+      actor_id: clockworks/tiktok-comments-scraper
+      max_comments_per_post: 20
+      input_template:
+        postURLs: ["{post_url}"]
+        commentsPerPost: "{cap}"
+        maxItems: "{cap}"
+
+  instagram:
+    enabled: true
+    # NOTE: apify/instagram-scraper hashtag-SEARCH mode returns {"error":"no_items",
+    # "errorDescription":"Empty or private data"} (Instagram blocks anonymous hashtag
+    # search). The purpose-built hashtag scraper returns real posts for the same tag.
+    actor_id: apify/instagram-hashtag-scraper
+    results_cap: 30
+    input_template:
+      hashtags: ["{term}"]
+      resultsLimit: "{cap}"
+    comments:
+      enabled: true
+      actor_id: apify/instagram-comment-scraper
+      max_comments_per_post: 20
+      input_template:
+        directUrls: ["{post_url}"]
+        resultsLimit: "{cap}"
+
+  facebook:
+    enabled: true
+    actor_id: apify/facebook-posts-scraper
+    results_cap: 30
+    input_template:
+      startUrls:
+        - url: "https://www.facebook.com/search/posts/?q={term}"
+      resultsLimit: "{cap}"
+    comments:
+      enabled: true
+      actor_id: apify/facebook-comments-scraper
+      max_comments_per_post: 20
+      input_template:
+        startUrls:
+          - url: "{post_url}"
+        resultsLimit: "{cap}"
+
+  x:
+    enabled: true
+    actor_id: apidojo/tweet-scraper
+    results_cap: 30
+    input_template:
+      searchTerms: ["{term}"]
+      maxItems: "{cap}"
+      sort: Latest
+    comments:
+      enabled: true
+      # Replies to the linked tweet. Confirm a reply-capable actor/IO on the Apify Store;
+      # if it returns nothing, the comments pass for X degrades gracefully to empty.
+      actor_id: apidojo/tweet-scraper
+      max_comments_per_post: 20
+      input_template:
+        startUrls:
+          - url: "{post_url}"
+        maxItems: "{cap}"
+        sort: Latest
+
+  # --- Rheumatology-only, opt-in community sites (public content via a generic web crawler) ---
+  # NOT term-seeded platform scrapers: `mode: crawl` runs a SINGLE site crawl over the public
+  # pages (editorial articles + member-post teasers). `only_areas` is a HARD gate (they run ONLY
+  # for Rheumatology) and `opt_in` keeps them OUT of a default "all channels" run — the analyst
+  # must select the chip. Captured pages are force-tagged Rheumatology. No `comments` block (the
+  # generic crawler has no per-post comment actor). Confirm the actor id/pricing on the Apify Store.
+  myrateam:
+    enabled: true
+    opt_in: true
+    only_areas: [Rheumatology]
+    mode: crawl
+    max_posts: 50                          # per-channel override of social.max_posts_per_channel (Balanced)
+    actor_id: apify/website-content-crawler
+    results_cap: 50
+    input_template:
+      startUrls:
+        - url: "https://www.myrateam.com/"                      # homepage "What Members are Saying" teasers
+        - url: "https://www.myrateam.com/resources"             # editorial articles hub
+        - url: "https://www.myrateam.com/resources/treatments-1"
+        - url: "https://www.myrateam.com/resources/topics"
+        - url: "https://www.myrateam.com/resources/types"
+        - url: "https://www.myrateam.com/resources/symptoms"
+      crawlerType: playwright:adaptive     # SPA-safe; uses plain HTTP when it can
+      maxCrawlPages: "{cap}"
+      maxResults: "{cap}"
+      maxCrawlDepth: 3
+      useSitemaps: true                    # Balanced: discover more URLs
+      includeUrlGlobs:                     # retarget budget onto the high-yield editorial subtree
+        - "https://www.myrateam.com/resources/**"
+      excludeUrlGlobs:                     # never touch gated/auth/account or low-yield nav pages
+        - "**/login/**"
+        - "**/registration/**"
+        - "**/signup/**"
+        - "**/account/**"
+        - "**/settings/**"
+        - "**/messages/**"
+        - "**/notifications/**"
+        - "**/search**"                    # search-result pages carry no durable content
+        - "**/tags/**"
+        - "**/members/**"                  # member profile pages (thin + PII-heavy)
+      proxyConfiguration:
+        useApifyProxy: true
+    # Optional domain-constrained Tavily supplement (governed by social.community_tavily_mode,
+    # default 'adaptive' = fire only when this crawl comes back thin). Pulls extra PUBLIC article
+    # text from the same site. Ignored unless mode != off AND TAVILY_API_KEY is set.
+    tavily:
+      domains: [myrateam.com]
+      queries:
+        - "rheumatoid arthritis treatment experience"
+        - "RA biologic side effects patient"
+        - "switching rheumatoid arthritis medication"
+
+  bezzy:
+    enabled: true
+    opt_in: true
+    only_areas: [Rheumatology]
+    mode: crawl
+    max_posts: 50
+    actor_id: apify/website-content-crawler
+    results_cap: 50
+    input_template:
+      startUrls:
+        - url: "https://www.bezzyra.com/"                       # community landing + teasers
+        - url: "https://www.bezzyra.com/discover/"              # articles / patient stories hub
+        - url: "https://www.bezzyra.com/discover/living-well-ra"
+        - url: "https://www.bezzyra.com/discover/treatments-ra"
+      crawlerType: playwright:adaptive
+      maxCrawlPages: "{cap}"
+      maxResults: "{cap}"
+      maxCrawlDepth: 3
+      useSitemaps: true
+      includeUrlGlobs:                     # retarget budget onto the article / patient-story subtree
+        - "https://www.bezzyra.com/discover/**"
+      excludeUrlGlobs:
+        - "**/login/**"
+        - "**/registration/**"
+        - "**/signup/**"
+        - "**/account/**"
+        - "**/appStore"
+        - "**/search**"
+        - "**/tags/**"
+      proxyConfiguration:
+        useApifyProxy: true
+    tavily:                                # see myrateam.tavily — flag-gated, default OFF
+      domains: [bezzyra.com]
+      queries:
+        - "rheumatoid arthritis living well"
+        - "RA treatment side effects experience"
+        - "newly diagnosed rheumatoid arthritis"
+
+# Seed terms (hashtags & search phrases) used to seed channel runs, keyed by the
+# therapeutic_area the ingest is scoped to. The pipeline selects the list for the
+# requested area; ad-hoc free-text searches pass their own terms and bypass this map.
+# Brand/competitor/condition names mirror brands.yaml (content-agnostic, SE-007).
+seed_terms_by_area:
+  Obesity:
+    - Ozempic
+    - Wegovy
+    - Zepbound
+    - Mounjaro
+    - GLP1
+    - semaglutide
+    - tirzepatide
+    - weight loss medication
+  Endometriosis:
+    - Lupron endometriosis
+    - Lupron Depot
+    - endometriosis treatment
+    - endometriosis injection
+    - Orilissa
+    - Myfembree
+  Uterine Fibroids:
+    - Lupron fibroids
+    - Lupron Depot
+    - uterine fibroids treatment
+    - fibroid injection
+    - Oriahnn
+    - Myfembree
+  Central Precocious Puberty:
+    - Lupron Depot-Ped
+    - precocious puberty treatment
+    - leuprolide children
+    - Supprelin LA
+    - Fensolvi
+    - puberty blocker
+  Dermatology:
+    - Skyrizi
+    - Rinvoq
+    - psoriasis biologic
+    - atopic dermatitis treatment
+    - hidradenitis suppurativa
+    - Dupixent
+    - Stelara
+  Gastroenterology:
+    - Skyrizi
+    - Humira
+    - Crohn's disease treatment
+    - ulcerative colitis
+    - biologic for IBD
+    - Entyvio
+    - Stelara
+  Oncology:
+    - Imbruvica
+    - Venclexta
+    - CLL treatment
+    - ibrutinib
+    - venetoclax
+    - Calquence
+    - leukemia treatment
+  Rheumatology:
+    - Rinvoq
+    - Humira
+    - rheumatoid arthritis treatment
+    - RA biologic
+    - Enbrel
+    - Xeljanz
+  Neuroscience:
+    - Vraylar
+    - cariprazine
+    - Rexulti
+    - bipolar disorder treatment
+    - schizophrenia medication
+    - Caplyta
+
+# Legacy fallback: used only if a scope has no entry in seed_terms_by_area AND no
+# terms can be derived from brands.yaml. Kept for backward compatibility.
+seed_terms:
+  - Ozempic
+  - Wegovy
+  - Zepbound
+  - Mounjaro
+  - GLP1
+  - semaglutide
+  - tirzepatide
+  - weight loss medication
+
+# Run-level caps (bound cost/latency for the demo).
+social:
+  max_terms_per_channel: 2      # seed terms per channel per ingest (each term = 1 synchronous Apify run; channels run in parallel)
+  max_posts_per_channel: 40     # hard stop on posts captured per channel per ingest
+  classify_batch_size: 10       # posts per LLM tagging batch
+  min_text_len: 12              # drop near-empty captures
+  therapeutic_area: Obesity     # scope tag stamped on captured posts
+
+  # Community-enrichment pass (patient-community crawls only: myRAteam / Bezzy RA). A second,
+  # community-tuned LLM pass extracts multi-drug mentions + patient-experience signals + unmet
+  # questions from each crawled page. Smaller batch than classify_batch_size because each page
+  # is far longer than a single social post.
+  community_classify_batch_size: 5
+  # Optional domain-constrained Tavily supplement for the community channels. The Apify crawl is
+  # ALWAYS the primary source; this only backfills PUBLIC article text from the same sites.
+  #   community_tavily_mode:
+  #     adaptive           — fire ONLY for a channel whose crawl returned < community_tavily_min_posts
+  #                          (rich data exactly when a crawl is thin; no spend when it is not)
+  #     always             — supplement every community ingest (costliest; some redundant items)
+  #     off                — never run
+  # Every mode still requires TAVILY_API_KEY; without a key it silently no-ops. Uses each
+  # community channel's `tavily` block (domains/queries).
+  community_tavily_mode: always
+  community_tavily_min_posts: 8     # adaptive trigger: a crawl returning fewer posts/channel = "thin"
+  community_tavily_max_results: 8   # Tavily results per query
+  community_tavily_max_queries: 3   # queries per community channel
+
+  # Comment-scraping pass (separate sentiment dimension). All-channels is the costliest
+  # path, so it is bounded by only fetching comments for the top-engagement posts per
+  # channel and capping comments per post.
+  comments_enabled: true                    # master toggle for the comments pass
+  max_comments_per_post: 20                 # top comments captured per post
+  max_posts_with_comments_per_channel: 12   # only the top-engagement posts get a comments pass
+  comment_run_concurrency: 4                # parallel comment-actor runs within a channel
+  comment_classify_batch_size: 12           # comments per LLM scoring batch
+  min_comment_len: 6                        # drop near-empty comments

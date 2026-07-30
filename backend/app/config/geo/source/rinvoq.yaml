@@ -1,0 +1,63 @@
+# GEO curated source — Rinvoq. See humira.yaml for the format contract.
+brand: Rinvoq
+generic: upadacitinib
+# Flip to true once Medical Affairs signs off the efficacy + competitors values below.
+clinical_values_verified: false
+manufacturer: AbbVie Inc.
+# See humira.yaml for the contract. Rinvoq is indicated in AD (Dermatology),
+# UC/CD (Gastroenterology) and RA/PsA/AS/nr-axSpA (Rheumatology).
+therapeutic_areas: [Dermatology, Gastroenterology, Rheumatology]
+drug_class: JAK inhibitor
+administration_route: Oral
+dosage_form: Extended-release tablet
+active_ingredient: upadacitinib
+prescribing_information: https://www.rxabbvie.com/pdf/rinvoq.pdf
+aliases: []
+
+openfda:
+  brand_name: RINVOQ
+  generic_name: upadacitinib
+
+strengths:
+  - {value: "15", unit: mg}
+  - {value: "30", unit: mg}
+  - {value: "45", unit: mg}
+
+indications:
+  - name: Rheumatoid Arthritis
+    description: Moderate-to-severe RA in adults with inadequate response to methotrexate
+  - name: Atopic Dermatitis
+    description: Moderate-to-severe atopic dermatitis in adults and adolescents 12+
+  - name: Ulcerative Colitis
+    description: Moderate-to-severe ulcerative colitis in adults
+  - name: Crohn's Disease
+    description: Moderate-to-severe Crohn's disease in adults
+  - name: Psoriatic Arthritis
+    description: Active psoriatic arthritis in adults
+  - name: Ankylosing Spondylitis
+    description: Active ankylosing spondylitis in adults
+
+adverse_outcomes:
+  - {name: Serious infections, severity: Boxed Warning}
+  - {name: Mortality (vs TNF inhibitor), severity: Boxed Warning}
+  - {name: Malignancies, severity: Boxed Warning}
+  - {name: MACE, severity: Boxed Warning}
+  - {name: Thrombosis (VTE), severity: Boxed Warning}
+  - {name: Herpes zoster, severity: Common}
+  - {name: Elevated CPK / liver enzymes, severity: Common}
+  - {name: Acne, severity: Common}
+
+# Covers 3 of the 6 indications declared above. The remaining three (Crohn's,
+# psoriatic arthritis, ankylosing spondylitis) are outstanding and need Medical
+# Affairs to supply and sign off the values — hence clinical_values_verified: false.
+efficacy:
+  rheumatoidArthritis: {measure: ACR20, value: "71%", timepoint: Week 12}
+  atopicDermatitis: {measure: EASI 75, value: "70%", timepoint: Week 16}
+  ulcerativeColitis: {measure: Clinical remission, value: "42%", timepoint: Week 52}
+
+# Rinvoq spans six indications across three specialties, so one flat list described
+# none of them: it offered RA comparators for an atopic dermatitis question. The
+# generator now derives a field PER INDICATION from the brands.yaml `indications:`
+# overlay, and the reader narrows to the question's disease. See humira.yaml.
+competitors:
+  biosimilars_available: false

@@ -1,0 +1,134 @@
+# Build, test, and deploy the Evidence Monitoring Agent to EC2.
+#
+# Bitbucket Pipelines port of a GitHub Actions build-test-deploy workflow.
+#
+# Trigger model:
+#   * push to main          -> run tests, then SSH-deploy.
+#   * pull request to main  -> run tests only (no deploy).
+#   * custom "deploy-main"  -> manual re-deploy (Pipelines UI -> Run pipeline).
+#
+# Deployment is intentionally low-tech: rsync the working tree to the EC2
+# host over SSH, then run scripts/ec2_deploy.sh on the box to (re)build a
+# single Docker image (nginx + uvicorn) and restart the container. No
+# external registry, no docker compose, no Kubernetes. See docs/deploy.md.
+#
+# Required repository variables (Repository settings -> Repository variables;
+# mark them "Secured"):
+#   EC2_HOST     - public DNS or IP of the EC2 instance
+#                  (e.g. ec2-3-12-36-59.us-east-2.compute.amazonaws.com)
+#   EC2_USER     - SSH username (Ubuntu AMI: "ubuntu"; Amazon Linux: "ec2-user")
+#   EC2_SSH_KEY  - base64-encoded private key:  base64 -w0 key.pem | pbcopy
+#                  (the Atlassian SSH pipes expect the key base64-encoded)
+
+definitions:
+  caches:
+    frontend-node: frontend/node_modules
+
+  steps:
+    # -------------------------------------------------------------------------
+    # Tests must pass before anything is deployed.
+    # -------------------------------------------------------------------------
+    - step: &test-backend
+        name: Backend - import check + pytest
+        image: python:3.12-slim
+        caches:
+          - pip
+        script:
+          - cd backend
+          - python -m pip install --upgrade pip
+          - pip install -r requirements.txt
+          # Fails fast on syntax / import errors without needing AWS creds.
+          - python -c "import app.main; print('app.main import OK')"
+          # Run pytest, but treat exit code 5 (no tests collected) as success.
+          - |
+            set +e
+            pytest -q
+            code=$?
+            set -e
+            if [ "$code" -ne 0 ] && [ "$code" -ne 5 ]; then exit "$code"; fi
+            echo "pytest finished (exit $code; 5 = no tests collected)"
+
+    - step: &test-frontend
+        name: Frontend - typecheck + build
+        image: node:20-slim
+        caches:
+          - frontend-node
+        script:
+          - cd frontend
+          - npm ci --no-audit --no-fund
+          # `npm run build` == tsc -b (typecheck) + vite build (smoke build).
+          - npm run build
+
+    # -------------------------------------------------------------------------
+    # Deploy: rsync working tree to EC2, rebuild image, restart container.
+    # -------------------------------------------------------------------------
+    - step: &deploy
+        name: Deploy to EC2 (rsync + docker)
+        deployment: production
+        image: atlassian/default-image:4
+        script:
+          # Record the deployed commit so the EC2 build can label the image
+          # (BITBUCKET_COMMIT is only defined here, not on the remote host).
+          - echo "$BITBUCKET_COMMIT" > "$BITBUCKET_CLONE_DIR/.git-sha"
+
+          # 1) Push the working tree to ~/evidence-monitoring-agent/ on the box.
+          #    --delete keeps the remote clean; excludes protect server-only
+          #    state (.env, data/) and local build artifacts.
+          #    (Pipe versions can be bumped to the latest in the Bitbucket
+          #     pipe catalog if these tags ever change.)
+          - pipe: atlassian/rsync-deploy:0.13.0
+            variables:
+              USER: $EC2_USER
+              SERVER: $EC2_HOST
+              REMOTE_PATH: 'evidence-monitoring-agent/'
+              LOCAL_PATH: '$BITBUCKET_CLONE_DIR/'
+              SSH_KEY: $EC2_SSH_KEY
+              DELETE_FLAG: 'true'
+              EXTRA_ARGS: '--exclude=.git --exclude=.env --exclude=data --exclude=node_modules --exclude=frontend/node_modules --exclude=frontend/dist --exclude=__pycache__ --exclude=.venv --exclude=.pytest_cache --exclude=*.db'
+
+          # 2) Rebuild the Docker image and restart the container on the box.
+          - pipe: atlassian/ssh-run:0.8.1
+            variables:
+              SSH_USER: $EC2_USER
+              SERVER: $EC2_HOST
+              SSH_KEY: $EC2_SSH_KEY
+              MODE: 'command'
+              COMMAND: 'bash ~/evidence-monitoring-agent/scripts/ec2_deploy.sh'
+
+          # 3) Smoke-test the public endpoint (container restart takes a moment).
+          - |
+            echo "Smoke-testing http://$EC2_HOST/healthz"
+            for i in $(seq 1 10); do
+              if curl -fsS --max-time 5 "http://$EC2_HOST/healthz" | grep -q '"status":"ok"'; then
+                echo "Deploy verified: /healthz OK on http://$EC2_HOST"
+                exit 0
+              fi
+              echo "Attempt $i: /healthz not ready yet, sleeping 5s..."
+              sleep 5
+            done
+            echo "ERROR: /healthz never returned ok within ~50s of deploy."
+            exit 1
+
+pipelines:
+  # Pull requests to any branch: tests only, no deploy.
+  pull-requests:
+    '**':
+      - parallel:
+          - step: *test-backend
+          - step: *test-frontend
+
+  # Push to main: tests, then deploy.
+  branches:
+    main:
+      - parallel:
+          - step: *test-backend
+          - step: *test-frontend
+      - step: *deploy
+
+  # Manual re-deploy of current main (Pipelines -> Run pipeline -> deploy-main).
+  custom:
+    deploy-main:
+      - parallel:
+          - step: *test-backend
+          - step: *test-frontend
+      - step: *deploy

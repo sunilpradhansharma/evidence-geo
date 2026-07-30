@@ -1,0 +1,237 @@
+{
+  "@context": "https://schema.org",
+  "@type": "Drug",
+  "name": "Humira",
+  "nonProprietaryName": "adalimumab",
+  "manufacturer": {
+    "@type": "Organization",
+    "name": "AbbVie Inc."
+  },
+  "drugClass": "TNF-alpha inhibitor",
+  "administrationRoute": "Subcutaneous injection",
+  "dosageForm": "Pre-filled syringe / Auto-injector pen",
+  "activeIngredient": "adalimumab",
+  "availableStrength": [
+    {
+      "@type": "DrugStrength",
+      "activeIngredient": "adalimumab",
+      "strengthValue": "40",
+      "strengthUnit": "mg"
+    },
+    {
+      "@type": "DrugStrength",
+      "activeIngredient": "adalimumab",
+      "strengthValue": "80",
+      "strengthUnit": "mg"
+    }
+  ],
+  "indication": [
+    {
+      "@type": "MedicalIndication",
+      "name": "Rheumatoid Arthritis",
+      "description": "Moderate-to-severe rheumatoid arthritis in adults who have had an inadequate response to DMARDs"
+    },
+    {
+      "@type": "MedicalIndication",
+      "name": "Crohn's Disease",
+      "description": "Moderate-to-severe Crohn's disease in adults who have had an inadequate response to conventional therapy"
+    },
+    {
+      "@type": "MedicalIndication",
+      "name": "Ulcerative Colitis",
+      "description": "Moderate-to-severe ulcerative colitis in adults"
+    },
+    {
+      "@type": "MedicalIndication",
+      "name": "Plaque Psoriasis",
+      "description": "Moderate-to-severe chronic plaque psoriasis in adults who are candidates for systemic therapy"
+    },
+    {
+      "@type": "MedicalIndication",
+      "name": "Psoriatic Arthritis",
+      "description": "Active psoriatic arthritis in adults"
+    },
+    {
+      "@type": "MedicalIndication",
+      "name": "Hidradenitis Suppurativa",
+      "description": "Moderate-to-severe hidradenitis suppurativa in patients 12 years and older"
+    }
+  ],
+  "adverseOutcome": [
+    {
+      "@type": "MedicalCondition",
+      "name": "Serious infections",
+      "severity": "Boxed Warning"
+    },
+    {
+      "@type": "MedicalCondition",
+      "name": "Malignancies including lymphoma",
+      "severity": "Boxed Warning"
+    },
+    {
+      "@type": "MedicalCondition",
+      "name": "Injection site reactions",
+      "severity": "Common"
+    },
+    {
+      "@type": "MedicalCondition",
+      "name": "Upper respiratory infections",
+      "severity": "Common"
+    },
+    {
+      "@type": "MedicalCondition",
+      "name": "Hepatotoxicity",
+      "severity": "Serious"
+    }
+  ],
+  "clinicalEfficacy": {
+    "rheumatoidArthritis": {
+      "measure": "ACR20",
+      "value": "65%",
+      "timepoint": "Week 24"
+    },
+    "crohnsDisease": {
+      "measure": "Clinical remission",
+      "value": "36%",
+      "timepoint": "Week 26"
+    },
+    "plaquePsoriasis": {
+      "measure": "PASI 75",
+      "value": "71%",
+      "timepoint": "Week 16"
+    }
+  },
+  "competitorContext": {
+    "therapeuticAreas": [
+      "Dermatology",
+      "Gastroenterology",
+      "Rheumatology"
+    ],
+    "biosimilarsAvailable": true,
+    "keyCompetitors": [
+      "Xeljanz",
+      "Olumiant",
+      "Enbrel",
+      "Orencia",
+      "Actemra",
+      "Cimzia",
+      "Simponi",
+      "Rituxan",
+      "Tremfya",
+      "Stelara",
+      "Entyvio",
+      "Omvoh",
+      "Zeposia",
+      "Velsipity",
+      "Cosentyx",
+      "Taltz",
+      "Bimzelx",
+      "Sotyktu",
+      "Otezla"
+    ],
+    "competitorsByIndication": {
+      "Rheumatoid Arthritis": [
+        "Xeljanz",
+        "Olumiant",
+        "Enbrel",
+        "Orencia",
+        "Actemra",
+        "Cimzia",
+        "Simponi",
+        "Rituxan"
+      ],
+      "Crohn's Disease": [
+        "Tremfya",
+        "Stelara",
+        "Entyvio",
+        "Omvoh"
+      ],
+      "Ulcerative Colitis": [
+        "Tremfya",
+        "Stelara",
+        "Entyvio",
+        "Zeposia",
+        "Omvoh",
+        "Velsipity",
+        "Xeljanz"
+      ],
+      "Plaque Psoriasis": [
+        "Tremfya",
+        "Stelara",
+        "Cosentyx",
+        "Taltz",
+        "Bimzelx",
+        "Sotyktu",
+        "Otezla",
+        "Enbrel"
+      ],
+      "Psoriatic Arthritis": [
+        "Tremfya",
+        "Cosentyx",
+        "Taltz",
+        "Stelara",
+        "Otezla",
+        "Enbrel",
+        "Simponi",
+        "Bimzelx"
+      ],
+      "Hidradenitis Suppurativa": [
+        "Cosentyx",
+        "Bimzelx"
+      ]
+    }
+  },
+  "prescribingInformation": "https://www.rxabbvie.com/pdf/humira.pdf",
+  "labelReference": {
+    "boxedWarning": "WARNING: SERIOUS INFECTIONS AND MALIGNANCY SERIOUS INFECTIONS Patients treated with HUMIRA are at increased risk for developing serious infections that may lead to hospitalization or death [see Warnings and Precautions ( 5.1 )]. Most patients who developed these infections were taking concomitant immunosuppressants such as methotrexate or corticosteroids. Discontinue HUMIRA if a patient develops a serious infection or sepsis. Reported infections include: Active tuberculosis (TB), including reactivation of latent TB. Patients with TB have frequently presented with disseminated or extrapulmonary disease. Test patients for latent TB before HUMIRA use and during therapy. Initiate treatment for latent TB prior to HUMIRA use. Invasive fungal infections, including histoplasmosis, coccidioidomycosis, candidiasis, aspergillosis, blastomycosis, and pneumocystosis. Patients with histoplasmosis or other invasive fungal infections may present with disseminated, rather than localized, disease. Antigen and antibody testing for histoplasmosis may be negative in some patients with active infection. Consider empiric anti-fungal therapy in patients at risk for invasive fungal infections who develop severe systemic illness. Bacterial, viral and other infections due to opportunistic pathogens, including Legionella and Listeria. Carefully consider the risks and benefits of treatment with HUMIRA prior to initiating therapy in patients with chronic or recurrent infection. Monitor patients closely for the development of signs and symptoms of infection during and after treatment with HUMIRA, including the possible development of TB in patients who tested negative for latent TB infection prior to initiating therapy [see Warnings and Precautions ( 5.1 ) and Adverse Reactions ( 6.1 )]. MALIGNANCY Lymphoma and other malignancies, some fatal, have been reported in children and adolescent patients treated with TNF blockers including HUMIRA [see Warnings and Precautions ( 5.2 )]. Post-marketing cases of hepatosplenic T-cell lymphoma (HSTCL), a rare type of T-cell lymphoma, have been reported in patients treated with TNF blockers including HUMIRA. These cases have had a very aggressive disease course and have been fatal. The majority of reported TNF blocker cases have occurred in patients with Crohn's disease or ulcerative colitis and the majority were in adolescent and young adult males. Almost all these patients had received treatment with azathioprine or 6-mercaptopurine (6–MP) concomitantly with a TNF blocker at or prior to diagnosis. It is uncertain whether the occurrence of HSTCL is related to use of a TNF blocker or a TNF blocker in combination with these other immunosuppressants [see Warnings and Precautions ( 5.2 )]. WARNING: SERIOUS INFECTIONS AND MALIGNANCY See full prescribing information for complete boxed warning. SERIOUS INFECTIONS ( 5.1 , 6.1 ): Increased risk of serious infections leading to hospitalization or death, including tuberculosis (TB), bacterial sepsis, invasive fungal infections (such as histoplasmosis), and infections due to other opportunistic pathogens. Discontinue HUMIRA if a patient develops a serious infection or sepsis during treatment. Perform test for latent TB; if positive, start treatment for TB prior to starting HUMIRA. Monitor all patients for active TB during treatment, even if initial latent TB test is negative. MALIGNANCY ( 5.2 ): Lymphoma and other malignancies, some fatal, have been reported in children and adolescent patients treated with TNF blockers including HUMIRA. Post-marketing cases of hepatosplenic T-cell lymphoma (HSTCL), a rare type of T-cell lymphoma, have occurred in adolescent and young adults with inflammatory bowel disease treated with TNF blockers including HUMIRA.",
+    "indicationsAndUsage": "1 INDICATIONS AND USAGE HUMIRA is a tumor necrosis factor (TNF) blocker indicated for: Reducing signs and symptoms, inducing major clinical response, inhibiting the progression of structural damage, and improving physical function in adult patients with moderately to severely active r heumatoid a rthritis . ( 1.1 ) Reducing signs and symptoms of moderately to severely active polyarticular juvenile idiopathic arthritis in patients 2 years of age and older. ( 1.2 ) Reducing signs and symptoms, inhibiting the progression of structural damage, and improving physical function in adult patients with active psoriatic arthritis . ( 1.3 ) Reducing signs and symptoms in adult patients with active ankylosing spondylitis . ( 1.4 ) Treatment of moderately to severely active Crohn’s disease in adults and pediatric patients 6 years of age and older. ( 1.5 ) Treatment of moderately to severely active ulcerative colitis in adults and pediatric patients 5 years of age and older. ( 1.6 ) Limitations of Use: Effectiveness has not been established in patients who have lost response to or were intolerant to TNF blockers. Treatment of adult patients with moderate to severe chronic plaque psoriasis who are candidates for systemic therapy or phototherapy, and when other systemic therapies are medically less appropriate. ( 1.7 ) Treatment of moderate to severe hidradenitis suppurativa in patients 12 years of age and older. ( 1.8 ) Treatment of non-infectious intermediate, posterior, and panuveitis in adults and pediatric patients 2 years of age and older. ( 1.9 ) 1.1 Rheumatoid Arthritis HUMIRA is indicated for reducing signs and symptoms, inducing major clinical response, inhibiting the progression of structural damage, and improving physical function in adult patients with moderately to severely active rheumatoid arthritis. HUMIRA can be used alone or in combination with methotrexate or other non-biologic disease-modifying anti-rheumatic drugs (DMARDs). 1.2 Juvenile Idiopathic Arthritis HUMIRA is indicated for reducing signs and symptoms of moderately to severely active polyarticular juvenile idiopathic arthritis in patients 2 years of age and older. HUMIRA can be used alone or in combination with methotrexate. 1.3 Psoriatic Arthritis HUMIRA is indicated for reducing signs and symptoms, inhibiting the progression of structural damage, and improving physical function in adult patients with active psoriatic arthritis. HUMIRA can be used alone or in combination with non-biologic DMARDs. 1.4 Ankylosing Spondylitis HUMIRA is indicated for reducing signs and symptoms in adult patients with active ankylosing spondylitis. 1.5 Crohn’s Disease HUMIRA is indicated for the treatment of moderately to severely active Crohn’s disease in adults and pediatric patients 6 years of age and older. 1.6 Ulcerative Colitis HUMIRA is indicated for the treatment of moderately to severely active ulcerative colitis in adults and pediatric patients 5 years of age and older. Limitations of Use The effectiveness of HUMIRA has not been established in patients who have lost response to or were intolerant to TNF blockers [see Clinical Studies ( 14.7 , 14.8 ) ] . 1.7 Plaque Psoriasis HUMIRA is indicated for the treatment of adult patients with moderate to severe chronic plaque psoriasis who are candidates for systemic therapy or phototherapy, and when other systemic therapies are medically less appropriate. HUMIRA should only be administered to patients who will be closely monitored and have regular follow-up visits with a physician [see Warnings and Precautions ( 5 ) ] . 1.8 Hidradenitis Suppurativa HUMIRA is indicated for the treatment of moderate to severe hidradenitis suppurativa in patients 12 years of age and older. 1.9 Uveitis HUMIRA is indicated for the treatment of non-infectious intermediate, posterior, and panuveitis in adults and pediatric patients 2 years of age and older.",
+    "adverseReactions": "6 ADVERSE REACTIONS The following clinically significant adverse reactions are described elsewhere in the labeling: Serious Infections [see Warnings and Precautions ( 5.1 ) ] Malignancies [see Warnings and Precautions ( 5.2 ) ] Hypersensitivity Reactions [see Warnings and Precautions ( 5.3 ) ] Hepatitis B Virus Reactivation [see Warnings and Precautions ( 5.4 ) ] Neurologic Reactions [see Warnings and Precautions ( 5.5 ) ] Hematological Reactions [see Warnings and Precautions ( 5.6 ) ] Heart Failure [see Warnings and Precautions ( 5.8 ) ] Autoimmunity [see Warnings and Precautions ( 5.9 ) ] Most common adverse reactions (>10%) are: infections (e.g. upper respiratory, sinusitis), injection site reactions, headache and rash. ( 6.1 ) To report SUSPECTED ADVERSE REACTIONS, contact AbbVie Inc. at 1-800-633-9110 or FDA at 1-800-FDA-1088 or www.fda.gov/medwatch 6.1 Clinical Trials Experience Because clinical trials are conducted under widely varying conditions, adverse reaction rates observed in the clinical trials of a drug cannot be directly compared to rates in the clinical trials of another drug and may not reflect the rates observed in practice. The most common adverse reaction with HUMIRA was injection site reactions. In placebo-controlled trials, 20% of subjects treated with HUMIRA developed injection site reactions (erythema and/or itching, hemorrhage, pain or swelling), compared to 14% of subjects receiving placebo. Most injection site reactions were described as mild and generally did not necessitate drug discontinuation. The proportion of subjects who discontinued treatment due to adverse reactions during the double-blind, placebo-controlled portion of studies in subjects with RA (i.e., Studies RA-I, RA-II, RA-III and RA-IV) was 7% for subjects taking HUMIRA and 4% for placebo-treated subjects. The most common adverse reactions leading to discontinuation of HUMIRA in these RA studies were clinical flare reaction (0.7%), rash (0.3%) and pneumonia (0.3%). Infections In the controlled portions of the 39 global HUMIRA clinical trials in adult subjects with RA, PsA, AS, CD, UC, Ps, HS and UV, the rate of serious infections was 4.3 per 100 patient-years in 7973 HUMIRA-treated subjects versus a rate of 2.9 per 100 patient-years in 4848 control-treated subjects. Serious infections observed included pneumonia, septic arthritis, prosthetic and post-surgical infections, erysipelas, cellulitis, diverticulitis, and pyelonephritis [see Warnings and Precautions ( 5.1 ) ] . Tuberculosis and Opportunistic Infections In 52 global controlled and uncontrolled clinical trials in RA, PsA, AS, CD, UC, Ps, HS and UV that included 24,605 HUMIRA-treated subjects, the rate of reported active tuberculosis was 0.20 per 100 patient-years and the rate of positive PPD conversion was 0.09 per 100 patient-years. In a subgroup of 10,113 U.S. and Canadian HUMIRA-treated subjects, the rate of reported active TB was 0.05 per 100 patient-years and the rate of positive PPD conversion was 0.07 per 100 patient-years. These trials included reports of miliary, lymphatic, peritoneal, and pulmonary TB. Most of the TB cases occurred within the first eight months after initiation of therapy and may reflect recrudescence of latent disease. In these global clinical trials, cases of serious opportunistic infections have been reported at an overall rate of 0.05 per 100 patient-years. Some cases of serious opportunistic infections and TB have been fatal [see Warnings and Precautions ( 5.1 ) ] . Autoantibodies In the rheumatoid arthritis controlled trials, 12% of subjects treated with HUMIRA and 7% of placebo-treated subjects that had negative baseline ANA titers developed positive titers at week 24. Two subjects out of 3046 treated with HUMIRA developed clinical signs suggestive of new-onset lupus-like syndrome. The subjects improved following discontinuation of therapy. No subjects developed lupus nephritis or central nervous system symptoms. The impact of long-term treatme …",
+    "dosageAndAdministration": "2 DOSAGE AND ADMINISTRATION Administer by subcutaneous injection ( 2 ) Rheumatoid Arthritis, Psoriatic Arthritis, Ankylosing Spondylitis ( 2.1 ): Adults: 40 mg every other week. Some patients with RA not receiving methotrexate may benefit from increasing the dosage to 40 mg every week or 80 mg every other week. Juvenile Idiopathic Arthritis or Pediatric Uveitis ( 2.2 ): Pediatric Weight 2 Years of Age and Older Recommended Dosage 10 kg (22 lbs) to less than 15 kg (33 lbs) 10 mg every other week 15 kg (33 lbs) to less than 30 kg (66 lbs) 20 mg every other week 30 kg (66 lbs) and greater 40 mg every other week Crohn's Disease ( 2.3 ): Adults: 160 mg on Day 1 (given in one day or split over two consecutive days); 80 mg on Day 15; and 40 mg every other week starting on Day 29. Pediatric Patients 6 Years of Age and Older : Pediatric Weight Recommended Dosage Days 1 and 15 Starting on Day 29 17 kg (37 lbs) to less than 40 kg (88 lbs) Day 1: 80 mg Day 15: 40 mg 20 mg every other week 40 kg (88 lbs) and greater Day 1: 160 mg (single dose or split over two consecutive days) Day 15: 80 mg 40 mg every other week Ulcerative Colitis ( 2.4 ) : Adults: 160 mg on Day 1 (given in one day or split over two consecutive days), 80 mg on Day 15 and 40 mg every other week starting on Day 29. Discontinue in patients without evidence of clinical remission by eight weeks (Day 57). Pediatric Patients 5 Years of Age and Older : Pediatric Weight Recommended Dosage Days 1 through 15 Starting on Day 29* 20 kg (44 lbs) to less than 40 kg (88 lbs) Day 1: 80 mg Day 8: 40 mg Day 15: 40 mg 40 mg every other week or 20 mg every week 40 kg (88 lbs) and greater Day 1: 160 mg (single dose or split over two consecutive days) Day 8: 80 mg Day 15: 80 mg 80 mg every other week or 40 mg every week * Continue the recommended pediatric dosage in patients who turn 18 years of age and who are well-controlled on their HUMIRA regimen. Plaque Psoriasis or Adult Uveitis ( 2.5 ): Adults : 80 mg initial dose, followed by 40 mg every other week starting one week after initial dose. Hidradenitis Suppurativa ( 2.6 ): Adults : ◦ Day 1: 160 mg (given in one day or split over two consecutive days) ◦ Day 15: 80 mg ◦ Day 29 and subsequent doses: 40 mg every week or 80 mg every other week Adolescents 12 years of age and older: Adolescent Weight Recommended Dosage 30 kg (66 lbs) to less than 60 kg (132 lbs) Day 1: 80 mg Day 8 and subsequent doses: 40 mg every other week 60 kg (132 lbs) and greater Day 1: 160 mg (given in one day or split over two consecutive days) Day 15: 80 mg Day 29 and subsequent doses: 40 mg every week or 80 mg every other week 2.1 Recommended Tuberculosis Evaluation Prior to initiating HUMIRA and periodically during therapy, evaluate patients for active tuberculosis and test for latent infection [see Warnings and Precautions ( 5.1 ) ] . 2.2 Recommended Dosage in Rheumatoid Arthritis, Psoriatic Arthritis, and Ankylosing Spondylitis The recommended subcutaneous dosage of HUMIRA for adult patients with rheumatoid arthritis (RA), psoriatic arthritis (PsA), or ankylosing spondylitis (AS) [see Indication and Usage ( 1.1 , 1.3 , 1.4 )] is 40 mg administered every other week. Methotrexate (MTX), other non-biologic DMARDS, glucocorticoids, nonsteroidal anti-inflammatory drugs (NSAIDs), and/or analgesics may be continued during treatment with HUMIRA. In the treatment of RA, some patients not taking concomitant MTX may derive additional benefit from increasing the dosage of HUMIRA to 40 mg every week or 80 mg every other week. 2. 3 Recommended Dosage in Juvenile Idiopathic Arthritis or Pediatric Patients with Uveitis The recommended subcutaneous dosage of HUMIRA for pediatric patients 2 years of age and older with polyarticular juvenile idiopathic arthritis (JIA) or pediatric uveitis [see Indications and Usage ( 1.2 , 1.9 )] , based on weight, is shown below. MTX, glucocorticoids, NSAIDs, and/or analgesics may be continued during treatment with HUMIRA. Pediatric Weight (2 Years o …"
+  },
+  "dataSource": "Curated (POC placeholder; clinical values pending Medical-Affairs verification); label fields seeded from openFDA (open.fda.gov)",
+  "lastUpdated": "2026-07-27",
+  "provenance": {
+    "generator": "scripts.generate_geo_schema",
+    "generatedAt": "2026-07-27",
+    "therapeuticAreas": [
+      "Dermatology",
+      "Gastroenterology",
+      "Rheumatology"
+    ],
+    "clinicalValuesVerified": false,
+    "curatedFields": [
+      "active_ingredient",
+      "administration_route",
+      "adverse_outcomes",
+      "brand",
+      "competitors",
+      "dosage_form",
+      "drug_class",
+      "efficacy",
+      "generic",
+      "indications",
+      "manufacturer",
+      "prescribing_information",
+      "strengths",
+      "therapeutic_areas"
+    ],
+    "appliedFromLabel": [],
+    "labelProvided": [
+      "manufacturer",
+      "boxed_warning",
+      "indications_text",
+      "adverse_reactions_text",
+      "dosage_text",
+      "prescribing_information"
+    ],
+    "labelReferenceIncluded": [
+      "adverseReactions",
+      "boxedWarning",
+      "dosageAndAdministration",
+      "indicationsAndUsage"
+    ],
+    "labelSource": "openFDA/DailyMed SPL 4977567e-3525-44ac-9ff5-f1e74b053950",
+    "labelEffectiveTime": "2025-12-23",
+    "note": "Curated YAML overrides openFDA-seeded fields. Replace placeholder clinical values with Medical-Affairs-approved data."
+  }
+}

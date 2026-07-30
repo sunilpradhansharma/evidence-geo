@@ -1,0 +1,214 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ────────────────────────────────────────────────────────────────────
+   Semantic design tokens (Magnus-style). Values are space-separated RGB
+   triplets so Tailwind's `rgb(var(--x) / <alpha-value>)` opacity syntax
+   keeps working. The `.dark` class (set pre-paint by the bootstrap in
+   index.html) flips every token at once, so the whole app re-themes with
+   no per-element `dark:` variants.
+   ──────────────────────────────────────────────────────────────────── */
+:root {
+  --ink: 26 26 46;
+  --ink-light: 51 65 85;
+  --ink-muted: 100 116 139;
+  --canvas: 248 250 251;
+  --canvas-card: 255 255 255;
+  --brand-surface: 240 253 250;
+  --surface-0: 238 242 247;
+  --surface-1: 255 255 255;
+  --surface-2: 255 255 255;
+  --line: 226 232 240;
+}
+.dark {
+  --ink: 226 232 240;
+  --ink-light: 148 163 184;
+  --ink-muted: 125 138 158;
+  --canvas: 11 16 24;
+  --canvas-card: 23 32 46;
+  --brand-surface: 12 38 36;
+  --surface-0: 11 16 24;
+  --surface-1: 17 24 36;
+  --surface-2: 23 32 46;
+  --line: 36 48 66;
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  font-family: 'DM Sans', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: rgb(var(--surface-0));
+  color: rgb(var(--ink));
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #0D4F4F33; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #0D4F4F66; }
+
+/* Pipeline flow animations */
+@keyframes flowPulse {
+  0%, 100% { opacity: 0.4; transform: scale(0.95); }
+  50% { opacity: 1; transform: scale(1); }
+}
+@keyframes flowDash {
+  to { stroke-dashoffset: -20; }
+}
+@keyframes nodeGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(13, 79, 79, 0); }
+  50% { box-shadow: 0 0 20px 4px rgba(13, 79, 79, 0.15); }
+}
+@keyframes processingPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(20, 184, 166, 0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(20, 184, 166, 0); }
+}
+@keyframes slideInRight {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+@keyframes fadeInUp {
+  from { transform: translateY(12px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes spinnerRotate {
+  to { transform: rotate(360deg); }
+}
+
+.animate-flow-pulse { animation: flowPulse 2s ease-in-out infinite; }
+.animate-flow-dash { animation: flowDash 1s linear infinite; }
+.animate-node-glow { animation: nodeGlow 3s ease-in-out infinite; }
+.animate-processing { animation: processingPulse 1.5s ease-in-out infinite; }
+.animate-slide-in { animation: slideInRight 0.3s ease-out; }
+.animate-fade-up { animation: fadeInUp 0.4s ease-out; }
+.animate-fade-in { animation: fadeIn 0.5s ease-out; }
+.animate-spinner { animation: spinnerRotate 0.8s linear infinite; }
+
+/* DNA glyph stroke flow — used by the Ema chat header/nudge mark */
+@keyframes gallery-dna-flow {
+  0%   { stroke-dashoffset: 0; }
+  100% { stroke-dashoffset: -16; }
+}
+@keyframes breathe {
+  0%, 100% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.06); opacity: 1; }
+}
+.animate-breathe { animation: breathe 3s ease-in-out infinite; }
+
+/* Influence-graph control sliders (Obsidian-style tuning panel, dark glass) */
+.ema-graph-slider { -webkit-appearance: none; appearance: none; }
+.ema-graph-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 12px;
+  width: 12px;
+  border-radius: 9999px;
+  background: #14B8A6;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+}
+.ema-graph-slider::-moz-range-thumb {
+  height: 12px;
+  width: 12px;
+  border-radius: 9999px;
+  background: #14B8A6;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+}
+
+.ema-influence-canvas {
+  background-color: #0b1120;
+  background-image:
+    radial-gradient(circle at 50% 42%, rgba(45, 212, 191, 0.07), transparent 44%),
+    radial-gradient(circle at 80% 15%, rgba(139, 132, 196, 0.06), transparent 28%),
+    linear-gradient(rgba(148, 163, 184, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, 0.025) 1px, transparent 1px);
+  background-size: auto, auto, 32px 32px, 32px 32px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ema-influence-canvas *,
+  .ema-influence-canvas *::before,
+  .ema-influence-canvas *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Gradient backgrounds */
+.bg-hero-gradient {
+  background: linear-gradient(135deg, #0D4F4F 0%, #14B8A6 100%);
+}
+
+/* ────────────────────────────────────────────────────────────────────
+   Dark-mode override layer. The pages use raw Tailwind neutrals
+   (bg-white / slate-*) that can't read our semantic tokens, so we remap
+   the finite set of them under `.dark`. `.dark .bg-white` (specificity
+   0,2,0) beats `.bg-white` (0,1,0), so no !important is needed. Every
+   rule is scoped to `.dark`, so light mode is completely untouched.
+   ──────────────────────────────────────────────────────────────────── */
+.dark .bg-white { background-color: rgb(var(--surface-2)); }
+.dark .bg-slate-50 { background-color: rgb(var(--surface-1)); }
+.dark .bg-slate-100 { background-color: rgb(var(--surface-0)); }
+.dark .bg-slate-200 { background-color: rgb(36 48 66); }
+.dark .bg-slate-300 { background-color: rgb(44 58 79); }
+.dark .bg-gray-50 { background-color: rgb(var(--surface-1)); }
+.dark .bg-gray-100 { background-color: rgb(var(--surface-0)); }
+
+.dark .text-slate-900 { color: rgb(var(--ink)); }
+.dark .text-slate-800 { color: rgb(203 213 225); }
+.dark .text-slate-700 { color: rgb(203 213 225); }
+.dark .text-slate-600 { color: rgb(var(--ink-light)); }
+.dark .text-slate-500 { color: rgb(139 152 172); }
+.dark .text-slate-400 { color: rgb(107 120 137); }
+
+.dark .border-slate-100 { border-color: rgb(27 37 51); }
+.dark .border-slate-200,
+.dark .border-slate-200\/80,
+.dark .border-slate-200\/60,
+.dark .border-slate-200\/50 { border-color: rgb(var(--line)); }
+.dark .border-slate-300 { border-color: rgb(44 58 79); }
+
+.dark .divide-slate-100 > :not([hidden]) ~ :not([hidden]),
+.dark .divide-slate-200 > :not([hidden]) ~ :not([hidden]) { border-color: rgb(var(--line)); }
+
+/* Subtle alert/section tints — keep the hue but darken so banners don't glare. */
+.dark .bg-amber-50 { background-color: rgb(60 45 12); }
+.dark .bg-red-50 { background-color: rgb(60 22 22); }
+.dark .bg-emerald-50 { background-color: rgb(8 40 33); }
+.dark .bg-teal-50 { background-color: rgb(8 40 38); }
+.dark .bg-sky-50 { background-color: rgb(12 34 54); }
+.dark .bg-blue-50 { background-color: rgb(15 30 56); }
+
+/* Hover states that would otherwise flash to a light neutral. */
+.dark .hover\:bg-white:hover { background-color: rgb(var(--surface-2)); }
+.dark .hover\:bg-slate-50:hover { background-color: rgb(var(--surface-1)); }
+.dark .hover\:bg-slate-100:hover { background-color: rgb(28 38 54); }
+.dark .hover\:bg-slate-200:hover { background-color: rgb(36 48 66); }
+
+/* Dark scrollbar */
+.dark ::-webkit-scrollbar-thumb { background: #14B8A655; }
+.dark ::-webkit-scrollbar-thumb:hover { background: #14B8A688; }
+
+/* ────────────────────────────────────────────────────────────────────
+   Minimum legible type. A few dense components use arbitrary sub-14px
+   sizes (text-[9px]/[10px]/[11px]/[13px]) for badges, labels and
+   captions. Nudge each one step larger app-wide so the smallest text
+   stays readable, without editing every call site. The `html` prefix
+   lifts specificity above the single-class utility (same technique as
+   the dark overrides above); only font-size changes, line-height is
+   left intact.
+   ──────────────────────────────────────────────────────────────────── */
+html .text-\[9px\]  { font-size: 11px; }
+html .text-\[10px\] { font-size: 12px; }
+html .text-\[11px\] { font-size: 13px; }
+html .text-\[13px\] { font-size: 14px; }

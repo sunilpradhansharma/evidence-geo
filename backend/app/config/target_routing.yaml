@@ -1,0 +1,15 @@
+# Persona-based target routing — controls which LLM targets receive queries.
+# Patient/Prospect: public LLMs only.
+# Provider: public LLMs + EvidenceMD (clinical reasoning API) + Open Evidence (manual capture, when available).
+# EvidenceMD is Provider-only and only actually runs when EVIDENCEMD_API_KEY is set (else it's disabled and skipped).
+
+routing:
+  Patient:
+    targets: [claude, nova-pro, llama, gpt-4o, gemini]
+  Prospect:
+    targets: [claude, nova-pro, llama, gpt-4o, gemini]
+  Provider:
+    targets: [claude, nova-pro, llama, gpt-4o, gemini, evidencemd, open-evidence]
+
+# Fallback: if a persona isn't listed above, use all enabled targets.
+default_targets: all

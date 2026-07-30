@@ -1,0 +1,51 @@
+# GEO curated source — Skyrizi. See humira.yaml for the format contract.
+brand: Skyrizi
+generic: risankizumab
+# Flip to true once Medical Affairs signs off the efficacy + competitors values below.
+clinical_values_verified: false
+manufacturer: AbbVie Inc.
+# See humira.yaml for the contract. Skyrizi is indicated in PsO (Dermatology),
+# CD/UC (Gastroenterology) and PsA (Rheumatology).
+therapeutic_areas: [Dermatology, Gastroenterology, Rheumatology]
+drug_class: IL-23 inhibitor
+administration_route: Subcutaneous injection / Intravenous infusion (induction)
+dosage_form: Pre-filled syringe / IV infusion
+active_ingredient: risankizumab-rzaa
+prescribing_information: https://www.rxabbvie.com/pdf/skyrizi.pdf
+aliases: [risankizumab]
+
+openfda:
+  brand_name: SKYRIZI
+  generic_name: risankizumab
+
+strengths:
+  - {value: "150", unit: mg}
+  - {value: "360", unit: mg}
+  - {value: "600", unit: mg}
+
+indications:
+  - name: Plaque Psoriasis
+    description: Moderate-to-severe plaque psoriasis in adults who are candidates for systemic therapy or phototherapy
+  - name: Psoriatic Arthritis
+    description: Active psoriatic arthritis in adults
+  - name: Crohn's Disease
+    description: Moderate-to-severe Crohn's disease in adults
+  - name: Ulcerative Colitis
+    description: Moderate-to-severe ulcerative colitis in adults
+
+adverse_outcomes:
+  - {name: Upper respiratory infections, severity: Common}
+  - {name: Headache, severity: Common}
+  - {name: Fatigue, severity: Common}
+  - {name: Injection site reactions, severity: Common}
+  - {name: Tinea infections, severity: Common}
+
+efficacy:
+  plaquePsoriasis: {measure: PASI 90, value: "75%", timepoint: Week 16}
+  crohnsDisease: {measure: Clinical remission (CDAI), value: "45%", timepoint: Week 52}
+  ulcerativeColitis: {measure: Clinical remission, value: "40%", timepoint: Week 52}
+
+# Derived per indication (PsO, PsA, UC, CD) from the brands.yaml `indications:`
+# overlay. See humira.yaml for why this is no longer curated here.
+competitors:
+  biosimilars_available: false

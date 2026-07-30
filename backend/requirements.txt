@@ -1,0 +1,73 @@
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+pydantic==2.10.4
+pydantic-settings==2.7.1
+sqlalchemy==2.0.36
+aiosqlite==0.20.0
+alembic==1.14.0
+boto3==1.35.92
+botocore==1.35.92
+pyyaml==6.0.2
+python-dotenv==1.0.1
+# Prompt Volume Intelligence (FR-116) — CSV parsing for third-party SEO/search-demand
+# exports (Semrush/Ahrefs). A requirements change needs a Docker image REBUILD on EC2.
+pandas==2.2.3
+apscheduler==3.11.0
+tzdata>=2024.1
+httpx==0.28.1
+# Source Authority Mapping (FR-706a) — Public Suffix List-backed domain parsing to
+# split a cited URL into normalized host / registrable domain / authority domain. Ships a
+# bundled PSL snapshot so parsing is fully offline (we pin suffix_list_urls=() at runtime,
+# so it NEVER makes a network call). A requirements change needs a Docker image REBUILD.
+tldextract>=5.1.0
+python-multipart==0.0.20
+greenlet==3.1.1
+
+# Google Vertex AI (Gemini target)
+google-genai>=1.0.0
+google-auth>=2.0.0
+
+# OpenAI (gpt-4o target) — Responses API + hosted web_search tool for source provenance
+openai>=1.68.0
+
+# Anthropic (optional Claude target path) — direct Messages API + native web_search tool for
+# source provenance. Only used when ANTHROPIC_API_KEY is set; otherwise `claude` runs on
+# Bedrock (boto3, already pinned) and this import is never triggered. Needs a version with the
+# web_search server tool. A requirements change needs a Docker image REBUILD on EC2.
+anthropic>=0.49.0
+
+# OpenEvidence unattended capture — drives the HCP-gated web UI (no API exists).
+# After install you MUST also fetch the browser binary: `playwright install chromium`
+# (in Docker use `playwright install --with-deps chromium`). Only needed when
+# OE_AUTO_ENABLED=true; the import is lazy so the app runs fine without the browser.
+playwright>=1.49.0
+
+# Optional extra anti-detection layer for the bot. OE_STEALTH already adds a built-in
+# stealth layer, so this is NOT required — install manually only if you want more:
+#   pip install playwright-stealth
+# playwright-stealth>=1.0.6
+
+# Snowflake mirror + Cortex insights. The connector is sync-only, so all calls are
+# wrapped in asyncio.to_thread; cryptography is used for key-pair (RSA) auth.
+snowflake-connector-python>=3.12.0
+cryptography>=43.0.0
+# Key-pair JWT generation for the Cortex Analyst / Agent REST API (chat widget).
+PyJWT>=2.9.0
+
+# Copilot agent — LangGraph state machine (Router/Orchestrator/tool_executor/
+# Analyst/Validator) powering the application-wide assistant chat. Backed by the
+# existing Bedrock (Converse) client; pulls langchain-core as a transitive dep.
+# A requirements change needs a Docker image REBUILD on EC2 (not just restart).
+langgraph>=0.2.40,<0.4
+
+# BR-008a Stakeholder-Differentiated Digests: Jinja2 renders the HTML email body;
+# fpdf2 converts the digest to an attached PDF. fpdf2 is pure-Python with NO native
+# dependencies, so PDF generation works identically on Windows dev and in Docker (no
+# GTK runtime needed). Email delivery uses boto3 SES (boto3 already pinned above).
+# NOTE: WeasyPrint (needs the native GTK/Pango stack) is an alternative that gives full
+# HTML/CSS fidelity — swap _render_pdf back to it once that runtime is available.
+jinja2>=3.1.4
+fpdf2>=2.8.0
+
+pytest==8.3.4
+pytest-asyncio==0.25.0

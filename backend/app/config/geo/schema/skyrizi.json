@@ -1,0 +1,217 @@
+{
+  "@context": "https://schema.org",
+  "@type": "Drug",
+  "name": "Skyrizi",
+  "nonProprietaryName": "risankizumab",
+  "manufacturer": {
+    "@type": "Organization",
+    "name": "AbbVie Inc."
+  },
+  "drugClass": "IL-23 inhibitor",
+  "administrationRoute": "Subcutaneous injection / Intravenous infusion (induction)",
+  "dosageForm": "Pre-filled syringe / IV infusion",
+  "activeIngredient": "risankizumab-rzaa",
+  "alternateName": [
+    "risankizumab"
+  ],
+  "availableStrength": [
+    {
+      "@type": "DrugStrength",
+      "activeIngredient": "risankizumab-rzaa",
+      "strengthValue": "150",
+      "strengthUnit": "mg"
+    },
+    {
+      "@type": "DrugStrength",
+      "activeIngredient": "risankizumab-rzaa",
+      "strengthValue": "360",
+      "strengthUnit": "mg"
+    },
+    {
+      "@type": "DrugStrength",
+      "activeIngredient": "risankizumab-rzaa",
+      "strengthValue": "600",
+      "strengthUnit": "mg"
+    }
+  ],
+  "indication": [
+    {
+      "@type": "MedicalIndication",
+      "name": "Plaque Psoriasis",
+      "description": "Moderate-to-severe plaque psoriasis in adults who are candidates for systemic therapy or phototherapy"
+    },
+    {
+      "@type": "MedicalIndication",
+      "name": "Psoriatic Arthritis",
+      "description": "Active psoriatic arthritis in adults"
+    },
+    {
+      "@type": "MedicalIndication",
+      "name": "Crohn's Disease",
+      "description": "Moderate-to-severe Crohn's disease in adults"
+    },
+    {
+      "@type": "MedicalIndication",
+      "name": "Ulcerative Colitis",
+      "description": "Moderate-to-severe ulcerative colitis in adults"
+    }
+  ],
+  "adverseOutcome": [
+    {
+      "@type": "MedicalCondition",
+      "name": "Upper respiratory infections",
+      "severity": "Common"
+    },
+    {
+      "@type": "MedicalCondition",
+      "name": "Headache",
+      "severity": "Common"
+    },
+    {
+      "@type": "MedicalCondition",
+      "name": "Fatigue",
+      "severity": "Common"
+    },
+    {
+      "@type": "MedicalCondition",
+      "name": "Injection site reactions",
+      "severity": "Common"
+    },
+    {
+      "@type": "MedicalCondition",
+      "name": "Tinea infections",
+      "severity": "Common"
+    }
+  ],
+  "clinicalEfficacy": {
+    "plaquePsoriasis": {
+      "measure": "PASI 90",
+      "value": "75%",
+      "timepoint": "Week 16"
+    },
+    "crohnsDisease": {
+      "measure": "Clinical remission (CDAI)",
+      "value": "45%",
+      "timepoint": "Week 52"
+    },
+    "ulcerativeColitis": {
+      "measure": "Clinical remission",
+      "value": "40%",
+      "timepoint": "Week 52"
+    }
+  },
+  "competitorContext": {
+    "therapeuticAreas": [
+      "Dermatology",
+      "Gastroenterology",
+      "Rheumatology"
+    ],
+    "biosimilarsAvailable": false,
+    "keyCompetitors": [
+      "Tremfya",
+      "Stelara",
+      "Cosentyx",
+      "Taltz",
+      "Bimzelx",
+      "Sotyktu",
+      "Otezla",
+      "Enbrel",
+      "Simponi",
+      "Entyvio",
+      "Omvoh",
+      "Zeposia",
+      "Velsipity",
+      "Xeljanz"
+    ],
+    "competitorsByIndication": {
+      "Plaque Psoriasis": [
+        "Tremfya",
+        "Stelara",
+        "Cosentyx",
+        "Taltz",
+        "Bimzelx",
+        "Sotyktu",
+        "Otezla",
+        "Enbrel"
+      ],
+      "Psoriatic Arthritis": [
+        "Tremfya",
+        "Cosentyx",
+        "Taltz",
+        "Stelara",
+        "Otezla",
+        "Enbrel",
+        "Simponi",
+        "Bimzelx"
+      ],
+      "Crohn's Disease": [
+        "Tremfya",
+        "Stelara",
+        "Entyvio",
+        "Omvoh"
+      ],
+      "Ulcerative Colitis": [
+        "Tremfya",
+        "Stelara",
+        "Entyvio",
+        "Zeposia",
+        "Omvoh",
+        "Velsipity",
+        "Xeljanz"
+      ]
+    }
+  },
+  "prescribingInformation": "https://www.rxabbvie.com/pdf/skyrizi.pdf",
+  "labelReference": {
+    "indicationsAndUsage": "1 INDICATIONS AND USAGE SKYRIZI is an interleukin-23 antagonist indicated for the treatment of: moderate-to-severe plaque psoriasis in adults and pediatric patients 6 years of age and older who are candidates for systemic therapy or phototherapy. ( 1.1 ) active psoriatic arthritis in adults and pediatric patients 6 years of age and older. ( 1.2 ) moderately to severely active Crohn's disease in adults. ( 1.3 ) moderately to severely active ulcerative colitis in adults. ( 1.4 ) 1.1 Plaque Psoriasis SKYRIZI ® is indicated for the treatment of moderate-to-severe plaque psoriasis in adults and pediatric patients 6 years of age and older who are candidates for systemic therapy or phototherapy. 1.2 Psoriatic Arthritis SKYRIZI is indicated for the treatment of active psoriatic arthritis in adults and pediatric patients 6 years of age and older. 1.3 Crohn’s Disease SKYRIZI is indicated for the treatment of moderately to severely active Crohn's disease in adults. 1.4 Ulcerative Colitis SKYRIZI is indicated for the treatment of moderately to severely active ulcerative colitis in adults.",
+    "adverseReactions": "6 ADVERSE REACTIONS The following adverse reactions are discussed in other sections of labeling: Hypersensitivity Reactions [see Warnings and Precautions ( 5.1 )] Infections [see Warnings and Precautions ( 5.2 )] Tuberculosis [see Warnings and Precautions ( 5.3 )] Hepatotoxicity [see Warnings and Precautions ( 5.4 )] Most common adverse reactions are: Plaque Psoriasis and Psoriatic Arthritis (≥ 1%): upper respiratory infections, headache, fatigue, injection site reactions, and tinea infections. ( 6.1 ) Crohn’s Disease (>3%): ◦ Induction : upper respiratory infections, headache, and arthralgia. ( 6.1 ) ◦ Maintenance : arthralgia, abdominal pain, injection site reactions, anemia, pyrexia, back pain, arthropathy, and urinary tract infection. ( 6.1 ) Ulcerative Colitis (≥3%): ◦ Induction : arthralgia. ( 6.1 ) ◦ Maintenance : arthralgia, pyrexia, injection site reactions, and rash. ( 6.1 ) To report SUSPECTED ADVERSE REACTIONS, contact AbbVie Inc. at 1-800-633-9110 or FDA at 1-800-FDA-1088 or www.fda.gov/medwatch. 6.1 Clinical Trials Experience Because clinical trials are conducted under widely varying conditions, adverse drug reaction rates observed in the clinical trials of a drug cannot be directly compared with rates in the clinical trials of another drug and may not reflect the rates observed in practice. Adverse Reactions in Adults with Plaque Psoriasis A total of 2234 subjects were treated with SKYRIZI in clinical development trials in plaque psoriasis. Of these, 1208 subjects with psoriasis were exposed to SKYRIZI for at least one year. Data from placebo- and active-controlled trials were pooled to evaluate the safety of SKYRIZI for up to 16 weeks. In total, 1306 subjects were evaluated in the SKYRIZI 150 mg group. Table 4 summarizes the adverse reactions that occurred at a rate of at least 1% and at a higher rate in the SKYRIZI group than the placebo group during the 16-week controlled period of pooled clinical trials. Table 4. Adverse Reactions Occurring in ≥ 1% of Adults with Plaque Psoriasis on SKYRIZI through Week 16 Adverse Drug Reactions SKYRIZI N = 1306 n (%) Placebo N = 300 n (%) Upper respiratory infections a 170 (13) 29 (9.7) Headache b 46 (3.5) 6 (2) Fatigue c 33 (2.5) 3 (1) Injection site reactions d 19 (1.5) 3 (1) Tinea infections e 15 (1.1) 1 (0.3) a Includes: respiratory tract infection (viral, bacterial or unspecified), sinusitis (including acute), rhinitis, nasopharyngitis, pharyngitis (including viral), tonsillitis b Includes: headache, tension headache, sinus headache, cervicogenic headache c Includes: fatigue, asthenia d Includes: injection site bruising, erythema, extravasation, hematoma, hemorrhage, infection, inflammation, irritation, pain, pruritus, reaction, swelling, warmth e Includes: tinea pedis, tinea cruris, body tinea, tinea versicolor, tinea manuum, tinea infection, onychomycosis Adverse reactions that occurred in < 1% but > 0.1% of subjects in the SKYRIZI group and at a higher rate than in the placebo group through Week 16 were folliculitis and urticaria. Specific Adverse Reactions Infections: In the first 16 weeks, infections occurred in 22.1% of the SKYRIZI group (90.8 events per 100 patient-years) compared with 14.7% of the placebo group (56.5 events per 100 patient-years) and did not lead to discontinuation of SKYRIZI. The rates of serious infections for the SKYRIZI group and the placebo group were ≤0.4%. Serious infections in the SKYRIZI group included cellulitis, osteomyelitis, sepsis, and herpes zoster. In Trials PsO-1 and PsO-2, through Week 52, the rate of infections (73.9 events per 100 patient-years) was similar to the rate observed during the first 16 weeks of treatment. Safety T hrough Week 52 Through Week 52, no new adverse reactions were identified, and the rates of the adverse reactions were similar to those observed during the first 16 weeks of treatment. During this period, serious infections that led to trial discontinuation included pneumonia. Plaque Psoriasis of the Sca …",
+    "dosageAndAdministration": "2 DOSAGE AND ADMINISTRATION For the treatment of moderately to severely active Crohn’s disease and ulcerative colitis: Obtain liver enzymes and bilirubin levels prior to initiating treatment with SKYRIZI. ( 2.1 , 5.4 ) Complete all age-appropriate vaccinations as recommended by current immunization guidelines ( 2.1 , 5.5 ) Recommended Dosage Moderate-to-Severe Plaque Psoriasis: Adults : 150 mg administered by subcutaneous injection at Week 0, Week 4, and every 12 weeks thereafter. ( 2.3 ) Pediatric P atients 6 Years of Age and Older : Patients weighing less than 40 kg: 55 mg administered by subcutaneous injection at Week 0, Week 4, and every 12 weeks thereafter. ( 2.3 ) Patients weighing 40 kg or greater: 150 mg administered by subcutaneous injection at Week 0, Week 4, and every 12 weeks thereafter. ( 2.3 ) Active Psoriatic Arthritis: Adults: 150 mg administered by subcutaneous injection at Week 0, Week 4, and every 12 weeks thereafter. ( 2.4 ) Pediatric Patients 6 Y ears of Age and Older: Patients weighing less than 40 kg: 55 mg administered by subcutaneous injection at Week 0, Week 4, and every 12 weeks thereafter. ( 2.4 ) Patients weighing 40 kg or greater: 150 mg administered by subcutaneous injection at Week 0, Week 4, and every 12 weeks thereafter. ( 2.4 ) SKYRIZI may be administered alone or in combination with non-biologic disease-modifying antirheumatic drugs (DMARDs). ( 2.4 ) Moderately to Severely Active Crohn’s Disease: The recommended induction dosage is 600 mg administered by intravenous infusion over at least one hour at Week 0, Week 4, and Week 8. The recommended maintenance dosage is 180 mg or 360 mg administered by subcutaneous injection at Week 12, and every 8 weeks thereafter. Use the lowest effective dosage to maintain therapeutic response. ( 2.6 ) Moderately to Severely Active Ulcerative Colitis: The recommended induction dosage is 1,200 mg administered by intravenous infusion over at least two hours at Week 0, Week 4, and Week 8. The recommended maintenance dosage is 180 mg or 360 mg administered by subcutaneous injection at Week 12, and every 8 weeks thereafter. Use the lowest effective dosage to maintain therapeutic response. ( 2.7 ) 2.1 Procedures Prior to Treatment Initiation For the treatment of moderately to severely active Crohn’s disease and ulcerative colitis, obtain liver enzymes and bilirubin levels prior to initiating treatment with SKYRIZI [see Warnings and Precautions ( 5.4 )] . Evaluate patients for tuberculosis (TB) infection prior to initiating treatment with SKYRIZI [see Warnings and Precautions ( 5.3 )] . Complete all age-appropriate vaccinations as recommended by current immunization guidelines [see Warnings and Precautions ( 5.5 )] . 2.2 General Considerations for Administration • Visually inspect SKYRIZI for particulate matter and discoloration prior to administration. The solution may contain a few translucent to white particles. ○ SKYRIZI 55 mg/0.37 mL prefilled syringe, 150 mg/mL prefilled pen or prefilled syringe, 180 mg/1.2 mL prefilled syringe or prefilled cartridge, and 360 mg/2.4 mL prefilled cartridge: a colorless to yellow, and clear to slightly opalescent solution. ○ SKYRIZI 90 mg/mL prefilled syringe and 600 mg/10 mL vial: a colorless to slightly yellow, and clear to slightly opalescent solution. ○ Do not use if the solution contains large particles or is cloudy or discolored. • Discard after use. Do not reuse. 2. 3 Recommended Dosage for Moderate-to-Severe Plaque Psoriasis Adults The recommended dosage for adults is 150 mg administered by subcutaneous injection at Week 0, Week 4, and every 12 weeks thereafter. Pediatric Patients 6 Years of Age and Older The recommended dosage for pediatric patients 6 years of age and older is based on body weight (see Table 1 ) and administered by subcutaneous injection at Week 0, Week 4, and every 12 weeks thereafter. Table 1. Recommended Dose of SKYRIZI for Pediatric Patients 6 Years of Age and Older with Moderate-to-Severe Plaque Pso …"
+  },
+  "dataSource": "Curated (POC placeholder; clinical values pending Medical-Affairs verification); label fields seeded from openFDA (open.fda.gov)",
+  "lastUpdated": "2026-07-27",
+  "provenance": {
+    "generator": "scripts.generate_geo_schema",
+    "generatedAt": "2026-07-27",
+    "therapeuticAreas": [
+      "Dermatology",
+      "Gastroenterology",
+      "Rheumatology"
+    ],
+    "clinicalValuesVerified": false,
+    "curatedFields": [
+      "active_ingredient",
+      "administration_route",
+      "adverse_outcomes",
+      "brand",
+      "competitors",
+      "dosage_form",
+      "drug_class",
+      "efficacy",
+      "generic",
+      "indications",
+      "manufacturer",
+      "prescribing_information",
+      "strengths",
+      "therapeutic_areas"
+    ],
+    "appliedFromLabel": [],
+    "labelProvided": [
+      "manufacturer",
+      "administration_route",
+      "drug_class",
+      "active_ingredient",
+      "indications_text",
+      "adverse_reactions_text",
+      "dosage_text",
+      "prescribing_information"
+    ],
+    "labelReferenceIncluded": [
+      "adverseReactions",
+      "dosageAndAdministration",
+      "indicationsAndUsage"
+    ],
+    "labelSource": "openFDA/DailyMed SPL 7148c8eb-b39e-e20a-6494-a6df82392858",
+    "labelEffectiveTime": "2026-06-26",
+    "note": "Curated YAML overrides openFDA-seeded fields. Replace placeholder clinical values with Medical-Affairs-approved data."
+  }
+}

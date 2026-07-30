@@ -1,0 +1,54 @@
+# Intent classification rules — deterministic (persona, domain) → intent mapping.
+# The Triage Gate (Layer 1). Editable without code changes.
+#
+# Intent buckets:
+#   CLINICAL     — Technical, trial-specific, guideline-driven queries (Provider-dominant)
+#   EXPERIENTIAL — Practical, lifestyle, emotional, patient-experience queries
+#   SCREENING    — Comparative, exploratory, "what are my options" queries
+#   SHORTHAND    — Abbreviated, drug-name-only, or jargon queries
+#
+# If no rule matches, the classifier returns UNCERTAIN → Layer 2 (LLM) kicks in.
+
+rules:
+  # Provider persona — almost always clinical
+  Provider:
+    Efficacy: CLINICAL
+    Safety: CLINICAL
+    Comparative: CLINICAL
+    General: CLINICAL
+    Access: CLINICAL
+
+  # Patient persona — experiential by default, clinical for safety/efficacy
+  Patient:
+    General: EXPERIENTIAL
+    Access: EXPERIENTIAL
+    Efficacy: EXPERIENTIAL
+    Safety: CLINICAL
+    Comparative: SCREENING
+
+  # Prospect persona — screening/exploratory by default
+  Prospect:
+    General: SCREENING
+    Access: SCREENING
+    Efficacy: SCREENING
+    Safety: SCREENING
+    Comparative: SCREENING
+
+# SHORTHAND only applies to genuinely short/abbreviated queries. A full clinical
+# sentence that merely contains one of the abbreviations below (e.g. "...undetectable
+# MRD rates...") is NOT shorthand, so the patterns only fire at or under this length.
+shorthand_max_words: 6
+
+# Keyword patterns that override the rule mapping → SHORTHAND
+# Matched case-insensitively against the question text.
+shorthand_patterns:
+  - "^[A-Za-z0-9\\-]+$"              # single-word drug name queries
+  - "^[A-Za-z]{2,6}\\s+vs\\.?\\s+"   # "Drug vs Drug" shorthand
+  - "\\bMOA\\b"                       # mechanism of action abbreviation
+  - "\\bPFS\\b"                       # progression-free survival
+  - "\\bORR\\b"                       # overall response rate
+  - "\\bPASI\\s*\\d+"                 # PASI score reference
+  - "\\bMRD\\b"                       # minimal residual disease
+  - "\\bTLS\\b"                       # tumor lysis syndrome
+  - "\\bAE\\b"                        # adverse event
+  - "\\bPI\\b"                        # prescribing information
