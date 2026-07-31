@@ -36,6 +36,72 @@ Components:
 • Adaptive Card + Deep Link
 • OBO Auth Flow
 
+flowchart LR
+
+    User[Business User]
+
+    subgraph M365["Microsoft 365 Copilot"]
+        Copilot[Microsoft 365 Copilot]
+        Agent["AbbVie Declarative Agent<br/>Copilot Studio"]
+    end
+
+    subgraph Integration["Integration Layer"]
+        Plugin["API Plugin<br/>OpenAPI"]
+        REST["Neo4j REST API<br/>FastAPI"]
+        Mapping[Entity Mapping Table]
+        Cache[Cache / Redis]
+    end
+
+    subgraph KG["Knowledge Graph Platform"]
+        Neo4j["(Neo4j Knowledge Graph)"]
+    end
+
+    subgraph Search["Microsoft Search & Semantic Index"]
+        Connector[Microsoft Graph Connector]
+        Semantic[M365 Semantic Index]
+    end
+
+    subgraph Analytics["Analytics Layer"]
+        PBI[Power BI Reports]
+        RLS[Power BI RLS]
+    end
+
+    subgraph Security["Security"]
+        AAD[Azure AD]
+        OBO[OBO Authentication Flow]
+    end
+
+    User --> Copilot
+    Copilot --> Agent
+
+    Agent --> Plugin
+    Plugin --> REST
+
+    REST --> Cache
+    REST --> Neo4j
+
+    Neo4j --> REST
+    REST --> Mapping
+
+    Mapping --> PBI
+
+    REST -->|Insight + Filters| Agent
+    Agent -->|Adaptive Card| Copilot
+    Copilot -->|View in Power BI| PBI
+
+    Neo4j --> Connector
+    Connector --> Semantic
+    Semantic --> Copilot
+
+    AAD --> OBO
+    OBO --> Plugin
+    OBO --> REST
+    OBO --> PBI
+
+    PBI --> RLS
+
+
+
 End-to-End Flow:
 1. User types a natural language question in M365 Copilot.
 2. Copilot routes the question to the cmp Declarative Agent.
