@@ -1,0 +1,50 @@
+ Knowledge Graph × Copilot × Power BI Strategic Integration Blueprint
+
+
+1. The Problem Statement
+
+cmp has made three significant and separate investments:
+
+• Neo4j Knowledge Graphs — a rich map of how 's brands, therapies, competitors, clinical data, and patient populations relate to each other (built by Rupesh and Kavita).
+
+• PowerBI — the primary reporting and visualisation surface used by the business.
+
+• Microsoft 365 Copilot — rolling out to all cmp employees as the enterprise AI assistant.
+
+Today these three investments do not talk to each other. The result is two friction points:
+
+Friction 1 — Duplicate conversational layer
+
+To expose Knowledge Graph intelligence conversationally, someone would have to build a separate chatbot on top of Neo4j. That is duplicated effort when Copilot is already the enterprise AI surface. The question is: can the Knowledge Graph plug into Copilot directly, making Copilot the one conversational layer instead of building another?
+
+Friction 2 — Context lost between conversation and reporting
+
+When a user gets an insight from a conversational bot powered by the KG — for example, "Skyrizi is losing ground among rheumatologists in the Midwest versus Tremfya" — the natural next step is to see that in PowerBI. Today the user must open PowerBI manually, find the right report, and re-apply all the filters themselves. The context built in the conversation is thrown away the moment the user switches tools.
+
+Goal: one seamless experience — user asks a smart question → Copilot answers using the Knowledge Graph → PowerBI instantly shows the supporting data already filtered to match, in one click.
+
+2. Full Architecture Overview
+
+The solution uses Microsoft's native Copilot extensibility stack — no separate chatbot, no third-party middleware.
+
+Components:
+• Graph Connector
+• Declarative Agent
+• API Plugin
+• Neo4j REST API
+• Entity Mapping Table
+• Adaptive Card + Deep Link
+• OBO Auth Flow
+
+End-to-End Flow:
+1. User types a natural language question in M365 Copilot.
+2. Copilot routes the question to the cmp Declarative Agent.
+3. The agent extracts entities.
+4. API Plugin calls Neo4j REST API.
+5. REST API translates to Cypher.
+6. Neo4j returns graph results.
+7. REST API formats JSON and builds Power BI filter URL.
+8. Copilot renders insights and Adaptive Card.
+9. User clicks View in Power BI.
+10. Power BI opens with filters already applied.
+
